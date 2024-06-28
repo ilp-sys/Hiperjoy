@@ -30,12 +30,10 @@ public class Components extends JFrame {
     private JPanel rightPanel;
     private static String baseURL = "";
 
-    private List<OpenFileList> openFileList = new ArrayList<OpenFileList>();
     private JPanel[] dropPanels = new JPanel[8];
     private GridBagConstraints gbc;
 
     private static ArrayList<DraggablePanel> dragPanelOpenList = new ArrayList<>();
-    private static ArrayList<DraggablePanel> clickPanel = new ArrayList<>();
 
 
     public Components() {
@@ -172,21 +170,21 @@ public class Components extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 // 마지막으로 클릭한 객체 가져오기
-                int lastIndex = clickPanel.size() - 1;
-                DraggablePanel getPanel = clickPanel.get(lastIndex);
+                int lastIndex = Context.getClickPanel().size() - 1;
+                DraggablePanel getPanel = Context.getClickPanel().get(lastIndex);
 
                 // 오픈된 객체 중 클릭한 객체가 있는지 확인 후 삭제
                 int selectedIndex = -1;
-                if (openFileList.size() != 0) {
-                    for (int idx = 0; idx < openFileList.size(); idx++) {
-                        if (openFileList.get(idx).id.equals(getPanel.getName())) {
+                if (Context.getOpenFileList().size() != 0) {
+                    for (int idx = 0; idx < Context.getOpenFileList().size(); idx++) {
+                        if (Context.getOpenFileList().get(idx).id.equals(getPanel.getName())) {
                             selectedIndex = idx;
-                            ApiSender.sendDeleteXML(openFileList.get(idx).id);
+                            ApiSender.sendDeleteXML(Context.getOpenFileList().get(idx).id);
                         }
                     }
                 }
                 // 오픈된 객체 저장하는 배열에서 삭제한 객체 삭제
-                openFileList.remove(selectedIndex);
+                Context.getOpenFileList().remove(selectedIndex);
 
                 // 삭제된 객체의 DraggablePanel이 있는 LayeredPane 가져오기
                 JLayeredPane layeredPane2 = frame.getLayeredPane();
@@ -221,15 +219,15 @@ public class Components extends JFrame {
                 }
 
                 // 오픈되어 있는 모든 객체들을 하이퍼월 컨트롤러에게 삭제 명령 내리기
-                if (openFileList.size() != 0) {
-                    for (OpenFileList item : openFileList) {
+                if (Context.getOpenFileList().size() != 0) {
+                    for (OpenFileList item : Context.getOpenFileList()) {
                         ApiSender.sendDeleteXML(item.id);
                     }
                 }
                 layeredPane.repaint();
 
                 // 배열 요소 전체 삭제
-                openFileList.clear();
+                Context.getOpenFileList().clear();
                 dragPanelOpenList.clear();
             }
         });
@@ -242,11 +240,11 @@ public class Components extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 // 마지막으로 클릭한 객체를 가지고 온다
-                int lastIndex = clickPanel.size() - 1;
-                DraggablePanel getPanel = clickPanel.get(lastIndex);
+                int lastIndex = Context.getClickPanel().size() - 1;
+                DraggablePanel getPanel = Context.getClickPanel().get(lastIndex);
 
                 // 클릭한 객체가 열려있는지 확인 후 동영상일 경우 Mute 명령 보내기
-                for (OpenFileList item : openFileList) {
+                for (OpenFileList item : Context.getOpenFileList()) {
                     if (item.id.equals(getPanel.getName()) && item.name.endsWith(".hwv")) {
                         ApiSender.sendVideoMute(item.id);
                         break;
@@ -262,8 +260,8 @@ public class Components extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 현재 오픈되어 있는 객체 중에 모든 동영상 객체에 Mute 명령 보내기
-                if (openFileList.size() != 0) {
-                    for (OpenFileList item : openFileList) {
+                if (Context.getOpenFileList().size() != 0) {
+                    for (OpenFileList item : Context.getOpenFileList()) {
                         if (item.name.endsWith(".hwv")) {
                             ApiSender.sendVideoMute(item.id);
                         }
@@ -288,8 +286,8 @@ public class Components extends JFrame {
                 int volume = volumeSlider.getValue();
 
                 // 오픈된 객체 중 모든 동영상 객체의 볼륨을 조절
-                if (openFileList.size() != 0) {
-                    for (OpenFileList item : openFileList) {
+                if (Context.getOpenFileList().size() != 0) {
+                    for (OpenFileList item : Context.getOpenFileList()) {
                         if (item.name.endsWith(".hwv")) {
                             ApiSender.sendVideoVolume(item.id, volume);
                         }
@@ -482,4 +480,5 @@ public class Components extends JFrame {
     }
 
     public static String getBaseURL() { return baseURL; }
+
 }

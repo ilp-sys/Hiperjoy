@@ -65,7 +65,7 @@ public class ApiSender {
                     System.out.println(
                             "Success to drag open " + openDir + " response : " + requestConnection.getResponseCode());
 
-                    openFileList.add(new OpenFileList(name, id, panelNumber));
+                    Context.getOpenFileList().add(new OpenFileList(name, id, panelNumber));
 
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -148,7 +148,7 @@ public class ApiSender {
                         .println("Success to drag change " + id + " response : " + requestConnection.getResponseCode());
 
                 // 열린 파일 중 해당 id값을 가진 파일 찾기
-                for (OpenFileList item : openFileList) {
+                for (OpenFileList item : Context.getOpenFileList()) {
                     if (item.id.equals(id)) {
                         item.panelNumber = panelNumber;
                     }
@@ -395,7 +395,7 @@ public class ApiSender {
             reqStream.write(xmlString.getBytes("UTF8"));
 
             if (requestConnection.getResponseCode() == 200) { // http 요청이 성공적으로 수행된 경우
-                for (OpenFileList item : openFileList) {
+                for (OpenFileList item : Context.getOpenFileList()) {
                     if (item.id.equals(id)) {
                         item.panelNumber = panelNumber; // 모든 openFileList를 순회했을 때 오픈된 파일의 id가 item의 id가 일치하는 컨텐츠가
                         // 새로운 패널로 옮겨짐

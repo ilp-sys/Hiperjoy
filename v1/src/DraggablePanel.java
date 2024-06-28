@@ -84,7 +84,7 @@ public class DraggablePanel extends JPanel {
 
                 if (c instanceof DraggablePanel) { // 클릭된 컴포넌트가(c) draggablePanel인지 확인하기
                     DraggablePanel addPanel = (DraggablePanel) c;
-                    clickPanel.add(addPanel); // 조건이 성립하면 DraggablePanel을 clickPanel 리스트에 추가
+                    Context.getClickPanel().add(addPanel); // 조건이 성립하면 DraggablePanel을 clickPanel 리스트에 추가
 
                     initialClick = e.getPoint(); // 마우스 클릭을 시작한 초기 위치 저장
 
@@ -161,7 +161,7 @@ public class DraggablePanel extends JPanel {
 
             @Override
             public void keyTyped(KeyEvent e) {
-                // TODO Auto-generated method stub
+                // TODO: Auto-generated method stub
 
             }
 
@@ -173,7 +173,7 @@ public class DraggablePanel extends JPanel {
                 if (e.getKeyCode() == KeyEvent.VK_DELETE && isSelected) {
                     // 클릭을 한 Component를 가지고 옴
                     Component pressedComponent = e.getComponent();
-                    JLayeredPane layeredPane = frame.getLayeredPane();
+                    JLayeredPane layeredPane = Components.getFrame().getLayeredPane();
 
                     // 그 Component가 DraggablePanel일 때
                     if (pressedComponent instanceof DraggablePanel) {
@@ -201,18 +201,18 @@ public class DraggablePanel extends JPanel {
                 // 클릭한 후 아래 방향키를 눌렀을 때
                 if (e.getKeyCode() == KeyEvent.VK_DOWN && isSelected) {
 
-                    int lastIndex = clickPanel.size() - 1;
+                    int lastIndex = Context.getClickPanel().size() - 1;
                     int beforePanel = 0;
                     String panelID = "";
 
                     DraggablePanel currentDraggablePanel = null;
-                    if (!clickPanel.isEmpty()) {
+                    if (!Context.getClickPanel().isEmpty()) {
                         // 클릭한 Panel 가져오기
-                        currentDraggablePanel = clickPanel.get(lastIndex);
+                        currentDraggablePanel = Context.getClickPanel().get(lastIndex);
                     }
 
                     // 클릭한 Panel의 panelNumber과 id값을 가져오기
-                    for (OpenFileList item : openFileList) {
+                    for (OpenFileList item : Context.getOpenFileList()) {
                         if (item.id.equals(currentDraggablePanel.getName())) {
                             beforePanel = item.panelNumber;
                             panelID = item.id;
@@ -241,18 +241,18 @@ public class DraggablePanel extends JPanel {
 
                 // 클릭한 후 위 방향키를 눌렀을 때
                 if (e.getKeyCode() == KeyEvent.VK_UP && isSelected) {
-                    int lastIndex = clickPanel.size() - 1;
+                    int lastIndex = Context.getClickPanel().size() - 1;
                     int beforePanel = 0;
                     String panelID = "";
 
                     DraggablePanel currentDraggablePanel = null;
                     // 선택한 객체가 있을 때
-                    if (!clickPanel.isEmpty()) {
+                    if (!Context.getClickPanel().isEmpty()) {
                         // 선택한 마지막 객체 가지고 오기
-                        currentDraggablePanel = clickPanel.get(lastIndex);
+                        currentDraggablePanel = Context.getClickPanel().get(lastIndex);
                     }
                     // 열린 파일 중 선택한 객체를 검사
-                    for (OpenFileList item : openFileList) {
+                    for (OpenFileList item : Context.getOpenFileList()) {
                         if (item.id.equals(currentDraggablePanel.getName())) {
                             beforePanel = item.panelNumber;
                             panelID = item.id;
@@ -277,19 +277,19 @@ public class DraggablePanel extends JPanel {
                 }
 
                 if (e.getKeyCode() == KeyEvent.VK_LEFT && isSelected) {
-                    int lastIndex = clickPanel.size() - 1;
+                    int lastIndex = Context.getClickPanel().size() - 1;
                     int beforePanel = 0;
                     String panelID = "";
 
                     DraggablePanel currentDraggablePanel = null;
                     // 선택한 객체가 있을 때
-                    if (!clickPanel.isEmpty()) {
+                    if (!Context.getClickPanel().isEmpty()) {
                         // 선택한 마지막 객체 가지고 오기
-                        currentDraggablePanel = clickPanel.get(lastIndex);
+                        currentDraggablePanel = Context.getClickPanel().get(lastIndex);
                     }
 
                     // 열린 파일 중 선택한 객체를 검사
-                    for (OpenFileList item : openFileList) {
+                    for (OpenFileList item : Context.getOpenFileList()) {
                         if (item.id.equals(currentDraggablePanel.getName())) {
                             beforePanel = item.panelNumber;
                             panelID = item.id;
@@ -314,19 +314,19 @@ public class DraggablePanel extends JPanel {
                 }
 
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT && isSelected) {
-                    int lastIndex = clickPanel.size() - 1;
+                    int lastIndex = Context.getClickPanel().size() - 1;
                     int beforePanel = 0;
                     String panelID = "";
 
                     DraggablePanel currentDraggablePanel = null;
                     // 선택한 객체가 있을 때
-                    if (!clickPanel.isEmpty()) {
+                    if (!Context.getClickPanel().isEmpty()) {
                         // 선택한 마지막 객체 가지고 오기
-                        currentDraggablePanel = clickPanel.get(lastIndex);
+                        currentDraggablePanel = Context.getClickPanel().get(lastIndex);
                     }
 
                     // 열린 파일 중 선택한 객체를 검사
-                    for (OpenFileList item : openFileList) {
+                    for (OpenFileList item : Context.getOpenFileList()) {
                         if (item.id.equals(currentDraggablePanel.getName())) {
                             beforePanel = item.panelNumber;
                             panelID = item.id;
@@ -354,7 +354,7 @@ public class DraggablePanel extends JPanel {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                // TODO Auto-generated method stub
+                // TODO: Auto-generated method stub
 
             }
         });

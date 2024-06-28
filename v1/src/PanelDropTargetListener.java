@@ -49,9 +49,10 @@ public class PanelDropTargetListener extends Container implements DropTargetList
                 }
 
                 // 파일이 open이 된 파일인지 확인
+                //TODO: remove openedName
                 String openedName = "";
                 boolean openedResult = false;
-                for (OpenFileList listObject : openFileList) {
+                for (OpenFileList listObject : Context.getOpenFileList()) {
                     openedResult = listObject.id.equals(name);
                     if (openedResult) {
                         openedName = listObject.id;

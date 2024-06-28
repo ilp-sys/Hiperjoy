@@ -3,9 +3,6 @@ import java.awt.*;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
 import java.awt.event.*;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class DraggablePanel extends JPanel {
@@ -144,7 +141,7 @@ public class DraggablePanel extends JPanel {
                         draggedPanel.setLocation(newX, newY); // 드래그중인 패널의 새 위치로 이동
                     }
 
-                    for (DraggablePanel panel : dragPanelOpenList) {
+                    for (DraggablePanel panel : Context.getDragPanelOpenList()) {
                         if (panel.getName().equals(draggedPanel.getName())) {
                             // dragPanelOpenList를 전부 순회해서 해당 패널을 찾아 속성 업데이트
                             panel.setSize(draggedPanel.getWidth(), draggedPanel.getHeight());
@@ -182,14 +179,14 @@ public class DraggablePanel extends JPanel {
                         String idValue = draggablePanel.getName();
 
                         // 열려있는 DraggablePanel 중 해당 id값을 가진 것을 찾음
-                        for (DraggablePanel panel : dragPanelOpenList) {
+                        for (DraggablePanel panel : Context.getDragPanelOpenList()) {
                             if (panel.getName().equals(idValue)) {
                                 // 하이퍼월 컨트롤러에서 그 DraggablePanel 지우기
                                 ApiSender.sendDeleteXML(idValue);
                                 // dragPanelOpenList에서 panel 지우기
                                 layeredPane.remove(pressedComponent);
                                 layeredPane.repaint();
-                                dragPanelOpenList.remove(panel);
+                                Context.getDragPanelOpenList().remove(panel);
                                 // 클릭 초기화
                                 pressed_flag = false;
                                 break;
@@ -384,7 +381,7 @@ public class DraggablePanel extends JPanel {
                 int subH = (int) (c.currentHeight > (c.currentHeight * ratioH) ? c.currentHeight - (c.currentHeight * ratioH) // 패널 높이가 변화된 차이를 절대값으로 계산하기
                         : (c.currentHeight * ratioH) - c.currentHeight);
                 // subW, subH: 크기 조절된 패널의 위치와 크기를 업데이트 할 때 필요한 정보
-                ApiSender.dropSendSizeChangeXML(DraggablePanel.this.getName(), panelResult, ratioW, ratioH, subW, subH);
+                ApiSender.dropSendSizeChangeXML(DraggablePanel.this.getName(), Context.getPanelNumber(), ratioW, ratioH, subW, subH);
             }
         });
     }
@@ -498,9 +495,8 @@ public class DraggablePanel extends JPanel {
         createHitBoxes();
         hitBoxPanel.setBounds(0, 0, currentWidth, currentHeight);
         // 함수 호출해서 통합 컨트롤러에서 변경할 때마다 컨트롤러도 변경
-        ApiSender.dropSendSizeChangeXML(this.getName(), panelResult, ratioW, ratioH, 0, 0);
+        ApiSender.dropSendSizeChangeXML(this.getName(), Context.getPanelNumber(), ratioW, ratioH, 0, 0);
         revalidate();
     }
-
 }
 

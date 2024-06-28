@@ -1,9 +1,6 @@
 import java.awt.*;
-import java.awt.datatransfer.*;
 import java.awt.dnd.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -23,7 +20,6 @@ public class Components extends JFrame {
     private static JFrame frame;
     private static JFrame inputFrame;
     @SuppressWarnings("exports")
-    private JLayeredPane layeredPane;
     private JPanel bottomPanel;
     @SuppressWarnings("exports")
     public JScrollPane treeScrollPane;
@@ -33,7 +29,6 @@ public class Components extends JFrame {
     private JPanel[] dropPanels = new JPanel[8];
     private GridBagConstraints gbc;
 
-    private static ArrayList<DraggablePanel> dragPanelOpenList = new ArrayList<>();
 
 
     public Components() {
@@ -190,16 +185,16 @@ public class Components extends JFrame {
                 JLayeredPane layeredPane2 = frame.getLayeredPane();
 
                 // 삭제할 객체를 찾아서 LayeredPane에서 삭제
-                for (int idx = 0; idx < dragPanelOpenList.size(); idx++) {
-                    if (dragPanelOpenList.get(idx).getName().equals(getPanel.getName())) {
+                for (int idx = 0; idx < Context.getDragPanelOpenList().size(); idx++) {
+                    if (Context.getDragPanelOpenList().get(idx).getName().equals(getPanel.getName())) {
                         selectedIndex = idx;
-                        layeredPane2.remove(dragPanelOpenList.get(idx));
+                        layeredPane2.remove(Context.getDragPanelOpenList().get(idx));
                         layeredPane2.repaint();
                         break;
                     }
                 }
                 // 삭제한 객체 배열에서도 삭제
-                dragPanelOpenList.remove(selectedIndex);
+                Context.getDragPanelOpenList().remove(selectedIndex);
             }
         });
 
@@ -213,7 +208,7 @@ public class Components extends JFrame {
                 JLayeredPane layeredPane2 = frame.getLayeredPane();
 
                 // 오픈되어 있는 모든 객체들을 LayeredPane에서 삭제하기
-                for (DraggablePanel panel : dragPanelOpenList) {
+                for (DraggablePanel panel : Context.getDragPanelOpenList()) {
                     layeredPane2.remove(panel);
                     layeredPane2.repaint();
                 }
@@ -224,11 +219,11 @@ public class Components extends JFrame {
                         ApiSender.sendDeleteXML(item.id);
                     }
                 }
-                layeredPane.repaint();
+                Context.getLayeredPane().repaint();
 
                 // 배열 요소 전체 삭제
                 Context.getOpenFileList().clear();
-                dragPanelOpenList.clear();
+                Context.getDragPanelOpenList().clear();
             }
         });
 
@@ -390,7 +385,7 @@ public class Components extends JFrame {
     }
 
     // 마우스 X, Y 좌표로 비디오 월 번호 반환
-    public int getPanelNumber(int x, int y) {
+    public static int getPanelNumber(int x, int y) {
         if (29 <= x && x <= 230) {
             if (262 <= y && y <= 381) {
                 return 1;

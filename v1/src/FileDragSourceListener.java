@@ -24,7 +24,7 @@ public class FileDragSourceListener implements DragSourceListener {
             String idValue = draggablePanel.getName();
 
             // 비디오 월에 열린 DraggablePanel 중에 그 id를 가진 객체가 있는지 확인
-            for (DraggablePanel panel : dragPanelOpenList) {
+            for (DraggablePanel panel : Context.getDragPanelOpenList()) {
                 if (panel.getName().equals(idValue)) {
                     selectPanel = panel;
                     break;

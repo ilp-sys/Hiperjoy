@@ -77,15 +77,15 @@ public class ApiSender {
                             // id값 설정
                             draggablePanel.setName(id);
                             // 열린 DraggablePanel 추가
-                            dragPanelOpenList.add(draggablePanel);
+                            Context.getDragPanelOpenList().add(draggablePanel);
+                            Context.setLayeredPane(Components.getFrame().getLayeredPane());
 
-                            layeredPane = Components.getFrame().getLayeredPane();
 
                             // 비디오 월 번호로 통합 컨트롤러 좌표 구함
                             int uiPointArray[] = Components.getUiPoint(panelNumber);
 
                             // UI에 DraggablePanel을 좌표에 맞게 추가
-                            layeredPane.add(draggablePanel, JLayeredPane.DEFAULT_LAYER);
+                            Context.getLayeredPane().add(draggablePanel, JLayeredPane.DEFAULT_LAYER);
                             draggablePanel.setBounds(uiPointArray[0], uiPointArray[1],
                                     draggablePanel.getPreferredSize().width, draggablePanel.getPreferredSize().height);
                             draggablePanel.revalidate();
@@ -159,7 +159,7 @@ public class ApiSender {
 
                         DraggablePanel selectedPanel = null;
                         // 열린 DraggablePanel 중 해당 id를 가진 DraggablePanel 찾기
-                        for (DraggablePanel panel : dragPanelOpenList) {
+                        for (DraggablePanel panel : Context.getDragPanelOpenList()) {
                             if (panel.getName().equals(id)) {
                                 selectedPanel = panel;
                             }
@@ -169,8 +169,8 @@ public class ApiSender {
                         int uiPointArray[] = Components.getUiPoint(panelNumber);
 
                         // DraggablePanel 위치 변경
-                        selectedPanel.setBounds(uiPointArray[0], uiPointArray[1], selectedPanel.currentWidth,
-                                selectedPanel.currentHeight);
+                        selectedPanel.setBounds(uiPointArray[0], uiPointArray[1], selectedPanel.getCurrentWidth(),
+                                selectedPanel.getCurrentHeight());
                         selectedPanel.revalidate();
                     }
                 });
@@ -406,7 +406,7 @@ public class ApiSender {
                     public void run() {
 
                         DraggablePanel selectedPanel = null;
-                        for (DraggablePanel panel : dragPanelOpenList) {
+                        for (DraggablePanel panel : Context.getDragPanelOpenList()) {
                             if (panel.getName().equals(id)) { // 모든 dragPanelOpenList를 순회했을 때 해당 리스트와 id가 일치하는 패널을
                                 // 찾는 경우
                                 selectedPanel = panel; // selectedPanel을 panel로 갱신

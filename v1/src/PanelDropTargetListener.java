@@ -6,6 +6,7 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.net.ConnectException;
 
 public class PanelDropTargetListener extends Container implements DropTargetListener {
     @Override
@@ -41,7 +42,7 @@ public class PanelDropTargetListener extends Container implements DropTargetList
                 DraggablePanel draggablePanel = null; // dropSendSizeChangeXML을 사용하기 위해 필요
 
                 // 비디오 월에 열린 DraggablePanel 중 해당 데이터를 가진 객체를 검사
-                for (DraggablePanel panel : dragPanelOpenList) {
+                for (DraggablePanel panel : Context.getDragPanelOpenList()) {
                     if (panel.getName().equals(name)) {
                         draggablePanel = panel;
                         break;
@@ -66,12 +67,12 @@ public class PanelDropTargetListener extends Container implements DropTargetList
                 int pointY = (int) point.getY();
 
                 // x, y 좌표로 비디오 월의 번호 구하기
-                panelResult = getPanelNumber(pointX, pointY);
+                Context.setPanelNumber(Components.getPanelNumber(pointX, pointY));
 
                 // 비디오 월에 이미 열린 객체 인 경우
                 if (openedResult && draggablePanel != null) {
                     // 객체 위치 변경
-                    ApiSender.dropSendSizeChangeXML(name, panelResult, draggablePanel.getRatioW(),
+                    ApiSender.dropSendSizeChangeXML(name, Context.getPanelNumber(), draggablePanel.getRatioW(),
                             draggablePanel.getRatioH(), 0, 0);
 
                 }
@@ -93,7 +94,7 @@ public class PanelDropTargetListener extends Container implements DropTargetList
                         // 파일 경로 받아오기
                         String filePath = DirTree.getControllerFileList().get(fileIndexSearchResult);
                         // 파일 열기
-                        ApiSender.dropSendOpenXML(name, panelResult, filePath);
+                        ApiSender.dropSendOpenXML(name, Context.getPanelNumber(), filePath);
 
                         ((DefaultTreeModel) Components.getTree().getModel()).reload();
                     }

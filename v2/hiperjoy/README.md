@@ -1,3 +1,3 @@
 # Hiperjoy
 
-run with `DYLD_LIBRARY_PATH=LeapSDK/lib` cargo run
+run with `DYLD_LIBRARY_PATH=LeapSDK/lib cargo run`

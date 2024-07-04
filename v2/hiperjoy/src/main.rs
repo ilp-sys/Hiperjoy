@@ -2,13 +2,16 @@ mod bindings {
     include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 }
 
+mod mouse_control;
+use crate::mouse_control::MouseControl;
+
 use bindings::{millisleep, GetDeviceProperties, GetFrame, IsConnected, OpenConnection};
 use std::ffi::CString;
 use std::thread::sleep;
 use std::time::Duration;
 
 fn main() {
-    println!("hello rust");
+    let mut mouse = MouseControl::new();
     unsafe {
         OpenConnection();
 
@@ -45,6 +48,8 @@ fn main() {
                     let x = position.__bindgen_anon_1.__bindgen_anon_1.x;
                     let y = position.__bindgen_anon_1.__bindgen_anon_1.y;
                     let z = position.__bindgen_anon_1.__bindgen_anon_1.z;
+
+                    mouse.move_mouse(x as i32, z as i32, enigo::Coordinate::Abs);
 
                     println!(
                         "    Hand id {} is a {} hand with position ({}, {}, {}).",

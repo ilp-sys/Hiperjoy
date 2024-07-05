@@ -5,10 +5,18 @@ use std::path::PathBuf;
 
 fn main() {
     println!("cargo:rustc-link-search=LeapSDK/lib");
+    println!("cargo:rustc-link-search=LeapSDK/lib/x64");
     println!("cargo:rustc-link-search=LeapSDK/samples");
-    println!("cargo:rustc-link-lib=LeapC");
-    println!("cargo:rustc-link-lib=LeapC.6");
-    println!("cargo:rustc-link-lib=exampleconnection");
+
+    if cfg!(target_os = "windows") {
+        println!("cargo:rustc-link-lib=LeapC");
+        println!("cargo:rustc-link-lib=exampleconnection");
+    } else {
+        println!("cargo:rustc-link-lib=LeapC");
+        println!("cargo:rustc-link-lib=LeapC.6");
+        println!("cargo:rustc-link-lib=exampleconnection");
+    }
+
     println!("cargo:rerun-if-changed=LeapSDK/include/LeapC.h");
     println!("cargo:rerun-if-changed=LeapSDK/samples/ExampleConnection.h");
     

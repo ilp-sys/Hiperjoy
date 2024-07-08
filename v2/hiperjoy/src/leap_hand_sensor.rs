@@ -7,9 +7,11 @@ pub fn leap_hand_sensor() {
 
     let mut c = Connection::create(ConnectionConfig::default()).unwrap();
     c.open().unwrap();
-    for _ in 0 ..10 {
+    for _ in 0..10 {
         if let Ok(msg) = c.poll(1000) {
             match msg.event() {
+                EventRef::Tracking(e) => println!("{} hand(s)", e.hands().len()),
+                _ => {}
             }
         }
     }

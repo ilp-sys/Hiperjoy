@@ -5,13 +5,14 @@ mod safety;
 mod leap_connection;
 mod connection_message;
 mod connection_info;
+mod connection_status;
 
-use gtk::prelude::*;
-use gtk::{glib, Application};
+// use gtk::prelude::*;
+// use gtk::{glib, Application};
 
 const APP_ID: &str = "hiperjoy";
 
-use build_ui::build_ui;
+//use build_ui::build_ui;
 
 // fn main() -> glib::ExitCode {
 //     let app = Application::builder().application_id(APP_ID).build();

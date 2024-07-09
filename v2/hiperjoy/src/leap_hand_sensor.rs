@@ -1,7 +1,6 @@
 use crate::mouse_control::MouseControl;
 
-use crate::leaprs::connection::{Connection, ConnectionConfig};
-use crate::leaprs::events::tracking_event::EventRef;
+use leaprs::{EventRef, Connection, ConnectionConfig};
 
 pub fn leap_hand_sensor() {
     let mouse = MouseControl::new();

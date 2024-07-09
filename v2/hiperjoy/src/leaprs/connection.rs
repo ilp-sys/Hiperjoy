@@ -1,9 +1,8 @@
 use std::{ffi::CString, marker::PhantomData, mem};
 
-
 use ::leap_sys::*;
 
-use crate::leaprs::*;
+use crate::*;
 
 #[doc = " A handle to the Leap connection object."]
 #[doc = " Use this handle to specify the connection for an operation."]

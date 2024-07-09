@@ -1,3 +1,47 @@
+#![allow(rustdoc::broken_intra_doc_links)] // The doc is mostly c/c from the origin, the links need repair.
+#![doc = include_str!("../README.md")]
+#![deny(clippy::all)]
+mod bone;
+mod capabilities;
+mod clock_rebaser;
+mod connection;
+mod connection_config;
+mod connection_info;
+mod connection_message;
+mod connection_status;
+mod device;
+mod device_info;
+mod device_pid;
+mod device_ref;
+mod device_status;
+mod digit;
+mod distortion_matrix;
+mod dropped_frame_type;
+mod event;
+mod events;
+mod frame_header;
+mod hand;
+mod image;
+mod image_format;
+mod image_properties;
+mod image_type;
+mod imu_flag;
+mod leap_rs;
+mod leap_vector;
+mod log_severity;
+mod palm;
+mod perspective_type;
+mod point_mapping;
+mod policy_flag;
+mod quaternion;
+mod service_state;
+mod sized_with_trailing_data;
+#[cfg(feature = "gemini")]
+mod tracking_mode;
+mod variant;
+#[cfg(feature = "gemini")]
+mod version;
+mod version_part;
 pub use crate::image::*;
 pub use bone::*;
 pub use capabilities::*;

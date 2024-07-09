@@ -11,7 +11,7 @@ const APP_ID: &str = "hiperjoy";
 //     app.run()
 // }
 
-use leap_hand_sensor::leap_hand_sensor;
+use hiperjoy::leap_hand_sensor::leap_hand_sensor;
 
 fn main() {
     leap_hand_sensor();

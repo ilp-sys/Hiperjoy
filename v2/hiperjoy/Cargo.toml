@@ -4,9 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bitflags = "2.6.0"
-derive_deref = "1.1.1"
 enigo = "0.2.1"
-leap-sys = "0.2.0"
-num_enum = "0.7.2"
-thiserror = "1.0.61"
+leaprs = { git = "https://github.com/plule/leaprs" }

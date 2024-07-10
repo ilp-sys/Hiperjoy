@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 enigo = "0.2.1"
 leaprs = { git = "https://github.com/plule/leaprs" }
+throbber = "0.1.4"

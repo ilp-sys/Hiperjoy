@@ -1,13 +1,10 @@
-use crate::mouse_control::MouseControl;
-use std::time::SystemTime;
+use crate::mouse_control::{MouseControl, MouseOperation};
 
 use leaprs::*;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use throbber::Throbber;
 
-pub fn leap_hand_sensor() {
-    let mut mouse = MouseControl::new();
-
+fn connecting() -> Connection {
     let mut connection =
         Connection::create(ConnectionConfig::default()).expect("Failed to create connection");
     connection.open().expect("Failed to open the connection");
@@ -62,81 +59,98 @@ pub fn leap_hand_sensor() {
         }
         _ => Msg::None,
     });
+    connection
+}
 
+pub fn index_pointing_upwards(digits: &mut [DigitRef; 5]) -> bool {
+    let index = digits[1].is_extended == 1;
+    let middle = digits[2].is_extended == 1;
+    let ring = digits[3].is_extended == 1;
+    let pinky = digits[4].is_extended == 1;
+
+    index && !middle && !ring && !pinky
+}
+
+pub fn pinky_pointing_upwards(digits: &mut [DigitRef; 5]) -> bool {
+    let index = digits[1].is_extended == 1;
+    let middle = digits[2].is_extended == 1;
+    let ring = digits[3].is_extended == 1;
+    let pinky = digits[4].is_extended == 1;
+
+    pinky && !index && !middle && !ring
+}
+
+pub fn leap_hand_sensor() {
+    let mut mouse = MouseControl::new();
+
+    let mut connection = connecting();
     let mut is_dragging = false;
+    let mut prev_hand_id = 0;
+    let mut last_click_time = Instant::now();
+    let click_debounce_duration = Duration::from_millis(300);
     loop {
         if let Ok(msg) = connection.poll(100) {
             match msg.event() {
                 EventRef::Tracking(e) => {
                     for hand in e.hands() {
+                        if prev_hand_id != hand.id {
+                            prev_hand_id = hand.id;
+                            println!("A new hand detected {}", prev_hand_id);
+                        }
                         let palm = hand.palm();
                         let pos = palm.position();
                         let x = pos.x;
                         let y = pos.y;
                         let z = pos.z;
-                        if hand.pinch_distance < 20.0 {
-                            mouse.perform_operation(crate::mouse_control::MouseOperation::ClickLeft);
+                        //println!("{} {} {}", x, y, z);
+
+
+                        if index_pointing_upwards(&mut hand.digits()) {
+                            println!("mouse scroll -5");
+                            mouse.perform_operation(MouseOperation::Scroll {
+                                vector: -3,
+                                direction: enigo::Axis::Vertical,
+                            });
+                        } else if pinky_pointing_upwards(&mut hand.digits()) {
+                            println!("mouse scroll 5");
+                            mouse.perform_operation(MouseOperation::Scroll {
+                                vector: 3,
+                                direction: enigo::Axis::Vertical,
+                            });
+                        } else if hand.pinch_distance < 20.0 {
+                            if last_click_time.elapsed() >= click_debounce_duration {
+                                mouse.perform_operation(MouseOperation::ClickLeft);
+                                println!("mouse click left");
+                                last_click_time = Instant::now();
+                            }
+                            else {
+                                println!("mouse click debounced");
+                            }
                         } else if hand.grab_strength > 0.9 {
                             if !is_dragging {
-                                mouse.perform_operation(crate::mouse_control::MouseOperation::PressLeft);
+                                mouse.perform_operation(MouseOperation::PressLeft);
                                 is_dragging = true;
+                                println!("mouse press left");
                             }
-                            mouse.move_mouse(x as i32 * 3, z as i32 * 3, enigo::Coordinate::Abs);
+                            mouse.move_mouse(x as i32 * -4, z as i32 * 4, enigo::Coordinate::Abs);
                         } else {
                             if is_dragging {
-                                mouse.perform_operation(crate::mouse_control::MouseOperation::ReleaseLeft);
+                                mouse.perform_operation(MouseOperation::ReleaseLeft);
+                                println!("mouse release left");
                                 is_dragging = false;
                             }
-                            mouse.move_mouse(x as i32 * 3, z as i32 * 3, enigo::Coordinate::Abs);
+                            mouse.perform_operation(MouseOperation::Move {
+                                x: x as i32 * -4,
+                                y: z as i32 * 4,
+                                coordinate: enigo::Coordinate::Abs,
+                            });
                         }
-                        //println!("{} {} {}", x, y, z);
-                        let pd = hand.pinch_distance;
-                        let ga = hand.grab_angle;
-                        let ps = hand.pinch_strength;
-                        let gs = hand.grab_strength;
-                        println!("{} {} {} {}", pd, ga, ps, gs);
                     }
                 }
                 _ => {}
             }
         }
     }
-
-    // let start = SystemTime::now();
-    // let mut clock_synchronizer = ClockRebaser::create().expect("Failed to create clock sync");
-    //
-    // loop {
-    //     // Note: If events are not polled, the frame interpolation fails with "is not seer"
-    //     let cpu_time = SystemTime::now().duration_since(start).unwrap().as_micros() as i64;
-    //     clock_synchronizer
-    //         .update_rebase(cpu_time, leap_get_now())
-    //         .expect("Failed to update rebase");
-    //
-    //     std::thread::sleep(Duration::from_millis(10));
-    //
-    //     let cpu_time = SystemTime::now().duration_since(start).unwrap().as_micros() as i64;
-    //
-    //     let target_frame_time = clock_synchronizer
-    //         .rebase_clock(cpu_time)
-    //         .expect("Failed to rebase clock");
-    //
-    //     let requested_size = connection
-    //         .get_frame_size(target_frame_time)
-    //         .expect("Failed to get requested size");
-    //
-    //     let frame = connection
-    //         .interpolate_frame(target_frame_time, requested_size)
-    //         .expect("Failed to interpolate frame");
-    //     let hands = frame.hands();
-    //     for hand in hands {
-    //         let palm = hand.palm();
-    //         let pos = palm.position();
-    //         let x = pos.x;
-    //         let y = pos.y;
-    //         let z = pos.z;
-    //         println!("{} {} {}", x, y, z);
-    //     }
-    // }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

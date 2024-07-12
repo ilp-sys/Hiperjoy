@@ -4,7 +4,7 @@ use leaprs::*;
 use std::time::{Duration, Instant};
 use throbber::Throbber;
 
-fn connecting() -> Connection {
+pub fn connecting() -> Connection {
     let mut connection = Connection::create(ConnectionConfig::default()).expect("");
     connection.open().expect("Failed to open the connection");
 
@@ -122,15 +122,15 @@ pub fn leap_hand_sensor() {
                         //println!("{} {} {}", x, y, z);
 
                         if index_pointing_upwards(&mut hand.digits()) {
-                            println!("mouse scroll -3");
+                            println!("mouse scroll -1");
                             mouse.perform_operation(MouseOperation::Scroll {
-                                vector: -3,
+                                vector: -1,
                                 direction: enigo::Axis::Vertical,
                             });
                         } else if pinky_pointing_upwards(&mut hand.digits()) {
-                            println!("mouse scroll 3");
+                            println!("mouse scroll 1");
                             mouse.perform_operation(MouseOperation::Scroll {
-                                vector: 3,
+                                vector: 1,
                                 direction: enigo::Axis::Vertical,
                             });
                         } else if hand.grab_strength > 0.9 {

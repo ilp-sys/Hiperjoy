@@ -1,5 +1,6 @@
+use crate::leap_hand_sensor::leap_hand_sensor;
 use gtk::prelude::*;
-use gtk::{Application, ApplicationWindow, Button};
+use gtk::{gio, Application, ApplicationWindow, Button};
 
 pub fn build_ui(app: &Application) {
     let button = Button::builder()
@@ -11,7 +12,15 @@ pub fn build_ui(app: &Application) {
         .build();
 
     button.connect_clicked(|button| {
-        button.set_label("Hello world");
+        let current_label = button.label().expect("failed to get button label");
+        if current_label == "activate" {
+            button.set_label("deactivate");
+            gio::spawn_blocking(move || {
+                leap_hand_sensor();
+            });
+        } else {
+            button.set_label("activate");
+        }
     });
 
     let window = ApplicationWindow::builder()

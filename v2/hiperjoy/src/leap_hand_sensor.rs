@@ -5,14 +5,31 @@ use std::time::{Duration, Instant};
 use throbber::Throbber;
 
 fn connecting() -> Connection {
-    let mut connection =
-        Connection::create(ConnectionConfig::default()).expect("Failed to create connection");
+    let mut connection = Connection::create(ConnectionConfig::default()).expect("");
     connection.open().expect("Failed to open the connection");
 
     connection.wait_for("Connecting to the service...".to_string(), |e| match e {
         EventRef::Connection(e) => {
             let flags = e.flags();
             Msg::Success(format!("Connected. Service state: {:?}", flags))
+        }
+        _ => Msg::None,
+    });
+
+    connection.wait_for("Waiting for a device...".to_string(), |e| match e {
+        EventRef::Device(e) => {
+            let device_info = e
+                .device()
+                .open()
+                .expect("Failed to open the device")
+                .get_info()
+                .expect("Failed to get device info");
+
+            let serial = device_info
+                .serial()
+                .expect("Failed to get the device serial");
+
+            Msg::Success(format!("Got the device {}", serial))
         }
         _ => Msg::None,
     });
@@ -82,8 +99,8 @@ pub fn pinky_pointing_upwards(digits: &mut [DigitRef; 5]) -> bool {
 
 pub fn leap_hand_sensor() {
     let mut mouse = MouseControl::new();
-
     let mut connection = connecting();
+
     let mut is_dragging = false;
     let mut prev_hand_id = 0;
     let mut last_click_time = Instant::now();

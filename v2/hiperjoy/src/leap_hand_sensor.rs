@@ -104,28 +104,18 @@ pub fn leap_hand_sensor() {
                         let z = pos.z;
                         //println!("{} {} {}", x, y, z);
 
-
                         if index_pointing_upwards(&mut hand.digits()) {
-                            println!("mouse scroll -5");
+                            println!("mouse scroll -3");
                             mouse.perform_operation(MouseOperation::Scroll {
                                 vector: -3,
                                 direction: enigo::Axis::Vertical,
                             });
                         } else if pinky_pointing_upwards(&mut hand.digits()) {
-                            println!("mouse scroll 5");
+                            println!("mouse scroll 3");
                             mouse.perform_operation(MouseOperation::Scroll {
                                 vector: 3,
                                 direction: enigo::Axis::Vertical,
                             });
-                        } else if hand.pinch_distance < 20.0 {
-                            if last_click_time.elapsed() >= click_debounce_duration {
-                                mouse.perform_operation(MouseOperation::ClickLeft);
-                                println!("mouse click left");
-                                last_click_time = Instant::now();
-                            }
-                            else {
-                                println!("mouse click debounced");
-                            }
                         } else if hand.grab_strength > 0.9 {
                             if !is_dragging {
                                 mouse.perform_operation(MouseOperation::PressLeft);
@@ -133,6 +123,14 @@ pub fn leap_hand_sensor() {
                                 println!("mouse press left");
                             }
                             mouse.move_mouse(x as i32 * -4, z as i32 * 4, enigo::Coordinate::Abs);
+                        } else if hand.pinch_distance < 15.0 {
+                            if last_click_time.elapsed() >= click_debounce_duration {
+                                mouse.perform_operation(MouseOperation::ClickLeft);
+                                println!("mouse click left");
+                                last_click_time = Instant::now();
+                            } else {
+                                println!("mouse click debounced");
+                            }
                         } else {
                             if is_dragging {
                                 mouse.perform_operation(MouseOperation::ReleaseLeft);

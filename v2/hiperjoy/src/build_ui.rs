@@ -1,9 +1,13 @@
-use crate::leap_hand_sensor::{connecting, leap_hand_sensor};
+use crate::leap_hand_sensor::leap_hand_sensor;
 use gtk::prelude::*;
 use gtk::{
-    gio, Application, ApplicationWindow, Box as GtkBox, Button, Orientation, ScrolledWindow,
+    gio, glib, Application, ApplicationWindow, Box as GtkBox, Button, Orientation, ScrolledWindow,
     TextView,
 };
+use std::sync::mpsc;
+use std::time::Duration;
+
+use crate::build_ui::glib::ControlFlow::Continue;
 
 fn append_log(log_panel: &TextView, message: &str) {
     let buffer = log_panel.buffer();
@@ -12,9 +16,6 @@ fn append_log(log_panel: &TextView, message: &str) {
 }
 
 pub fn build_ui(app: &Application) {
-    gio::spawn_blocking(|| {
-        leap_hand_sensor();
-    });
     let button = Button::builder()
         .label("deactivate")
         .margin_top(12)
@@ -35,6 +36,31 @@ pub fn build_ui(app: &Application) {
     let vbox = GtkBox::new(Orientation::Vertical, 0);
     vbox.append(&scrolled_window);
     vbox.append(&button);
+
+    //let (tx, rx) = mpsc::channel();
+    let (tx, rx) = mpsc::channel();
+    gio::spawn_blocking(move || {
+        leap_hand_sensor(tx);
+    });
+
+    let log_panel_clone = log_panel.clone();
+    glib::MainContext::default().spawn_local(async move {
+        loop {
+            // Check for messages in a non-blocking way
+            while let Ok(log_message) = rx.try_recv() {
+                // Clone the log_panel for use in the async block
+                let log_panel_clone_inner = log_panel_clone.clone();
+                // Execute the UI update in the main thread
+                glib::MainContext::default().spawn_local(async move {
+                    let buffer = log_panel_clone_inner
+                        .buffer();
+                    buffer.insert_at_cursor(&log_message);
+                });
+            }
+            // Sleep for a short duration to avoid busy-waiting
+            glib::timeout_future(Duration::from_millis(100)).await;
+        }
+    });
 
     button.connect_clicked(move |button| {
         let current_label = button.label().expect("failed to get button label");

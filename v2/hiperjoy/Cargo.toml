@@ -6,6 +6,5 @@ edition = "2021"
 [dependencies]
 enigo = "0.2.1"
 gtk = { version = "0.9.0", package = "gtk4", features = ["v4_14"] }
-lazy_static = "1.5.0"
 leaprs = { git = "https://github.com/plule/leaprs" }
 throbber = "0.1.4"

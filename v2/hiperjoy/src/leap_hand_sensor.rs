@@ -4,6 +4,8 @@ use leaprs::*;
 use std::time::{Duration, Instant};
 use throbber::Throbber;
 
+use std::sync::mpsc;
+
 pub fn connecting() -> Connection {
     let mut connection = Connection::create(ConnectionConfig::default()).expect("");
     connection.open().expect("Failed to open the connection");
@@ -97,7 +99,7 @@ pub fn pinky_pointing_upwards(digits: &mut [DigitRef; 5]) -> bool {
     pinky && !index && !middle && !ring
 }
 
-pub fn leap_hand_sensor() {
+pub fn leap_hand_sensor(tx: mpsc::Sender::<String>) {
     let mut mouse = MouseControl::new();
     let mut connection = connecting();
 
@@ -112,23 +114,26 @@ pub fn leap_hand_sensor() {
                     for hand in e.hands() {
                         if prev_hand_id != hand.id {
                             prev_hand_id = hand.id;
-                            println!("A new hand detected {}", prev_hand_id);
+                            //println!("A new hand detected {}", prev_hand_id);
+                            let _ = tx.send("A new hand detected".to_string());
                         }
                         let palm = hand.palm();
                         let pos = palm.position();
                         let x = pos.x;
-                        let y = pos.y;
+                        //let y = pos.y;
                         let z = pos.z;
                         //println!("{} {} {}", x, y, z);
 
                         if index_pointing_upwards(&mut hand.digits()) {
-                            println!("mouse scroll -1");
+                            //println!("mouse scroll -1");
+                            let _ = tx.send("mouse scroll -1".to_string());
                             mouse.perform_operation(MouseOperation::Scroll {
                                 vector: -1,
                                 direction: enigo::Axis::Vertical,
                             });
                         } else if pinky_pointing_upwards(&mut hand.digits()) {
-                            println!("mouse scroll 1");
+                            //println!("mouse scroll 1");
+                            let _ = tx.send("mouse scroll 1".to_string());
                             mouse.perform_operation(MouseOperation::Scroll {
                                 vector: 1,
                                 direction: enigo::Axis::Vertical,
@@ -137,21 +142,25 @@ pub fn leap_hand_sensor() {
                             if !is_dragging {
                                 mouse.perform_operation(MouseOperation::PressLeft);
                                 is_dragging = true;
-                                println!("mouse press left");
+                                //println!("mouse press left");
+                                let _ = tx.send("mouse press left".to_string());
                             }
                             mouse.move_mouse(x as i32 * -4, z as i32 * 4, enigo::Coordinate::Abs);
                         } else if hand.pinch_distance < 15.0 {
                             if last_click_time.elapsed() >= click_debounce_duration {
                                 mouse.perform_operation(MouseOperation::ClickLeft);
-                                println!("mouse click left");
+                                //println!("mouse click left");
+                                let _ = tx.send("mouse click left".to_string());
                                 last_click_time = Instant::now();
                             } else {
-                                println!("mouse click debounced");
+                                //println!("mouse click debounced");
+                                let _ = tx.send("mouse click debounced".to_string());
                             }
                         } else {
                             if is_dragging {
                                 mouse.perform_operation(MouseOperation::ReleaseLeft);
-                                println!("mouse release left");
+                                //println!("mouse release left");
+                                let _ = tx.send("mouse release left".to_string());
                                 is_dragging = false;
                             }
                             mouse.perform_operation(MouseOperation::Move {

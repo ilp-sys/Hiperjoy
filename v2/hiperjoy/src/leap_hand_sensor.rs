@@ -4,15 +4,34 @@ use leaprs::*;
 use std::time::{Duration, Instant};
 use throbber::Throbber;
 
-fn connecting() -> Connection {
-    let mut connection =
-        Connection::create(ConnectionConfig::default()).expect("Failed to create connection");
+use std::sync::mpsc;
+
+pub fn connecting() -> Connection {
+    let mut connection = Connection::create(ConnectionConfig::default()).expect("");
     connection.open().expect("Failed to open the connection");
 
     connection.wait_for("Connecting to the service...".to_string(), |e| match e {
         EventRef::Connection(e) => {
             let flags = e.flags();
             Msg::Success(format!("Connected. Service state: {:?}", flags))
+        }
+        _ => Msg::None,
+    });
+
+    connection.wait_for("Waiting for a device...".to_string(), |e| match e {
+        EventRef::Device(e) => {
+            let device_info = e
+                .device()
+                .open()
+                .expect("Failed to open the device")
+                .get_info()
+                .expect("Failed to get device info");
+
+            let serial = device_info
+                .serial()
+                .expect("Failed to get the device serial");
+
+            Msg::Success(format!("Got the device {}", serial))
         }
         _ => Msg::None,
     });
@@ -28,37 +47,6 @@ fn connecting() -> Connection {
         _ => Msg::None,
     });
 
-    connection.wait_for("Close the hand".to_string(), |e| match e {
-        EventRef::Tracking(e) => {
-            if let Some(hand) = e.hands().first() {
-                let grab_strength = hand.grab_strength;
-                if grab_strength >= 1.0 {
-                    Msg::Success("The hand is closed".to_string())
-                } else {
-                    Msg::Progress(format!("Close the hand {:.0}%", grab_strength * 100.0))
-                }
-            } else {
-                Msg::Progress("Close the hand".to_string())
-            }
-        }
-        _ => Msg::None,
-    });
-
-    connection.wait_for("Open the hand".to_string(), |e| match e {
-        EventRef::Tracking(e) => {
-            if let Some(hand) = e.hands().first() {
-                let ungrab_strength = 1.0 - hand.grab_strength;
-                if ungrab_strength >= 0.999 {
-                    Msg::Success("The hand is opened".to_string())
-                } else {
-                    Msg::Progress(format!("Open the hand {:.0}%", ungrab_strength * 100.0))
-                }
-            } else {
-                Msg::Progress("Open the hand".to_string())
-            }
-        }
-        _ => Msg::None,
-    });
     connection
 }
 
@@ -80,10 +68,10 @@ pub fn pinky_pointing_upwards(digits: &mut [DigitRef; 5]) -> bool {
     pinky && !index && !middle && !ring
 }
 
-pub fn leap_hand_sensor() {
+pub fn leap_hand_sensor(tx: mpsc::Sender::<String>) {
     let mut mouse = MouseControl::new();
-
     let mut connection = connecting();
+
     let mut is_dragging = false;
     let mut prev_hand_id = 0;
     let mut last_click_time = Instant::now();
@@ -95,7 +83,8 @@ pub fn leap_hand_sensor() {
                     for hand in e.hands() {
                         if prev_hand_id != hand.id {
                             prev_hand_id = hand.id;
-                            println!("A new hand detected {}", prev_hand_id);
+                            //println!("A new hand detected {}", prev_hand_id);
+                            let _ = tx.send("A new hand detected".to_string());
                         }
                         let palm = hand.palm();
                         let pos = palm.position();
@@ -105,41 +94,46 @@ pub fn leap_hand_sensor() {
                         //println!("{} {} {}", x, y, z);
 
                         if index_pointing_upwards(&mut hand.digits()) {
-                            println!("mouse scroll -3");
+                            let _ = tx.send("mouse scroll -1".to_string());
                             mouse.perform_operation(MouseOperation::Scroll {
-                                vector: -3,
+                                vector: -1,
                                 direction: enigo::Axis::Vertical,
                             });
                         } else if pinky_pointing_upwards(&mut hand.digits()) {
-                            println!("mouse scroll 3");
+                            //println!("mouse scroll 1");
+                            let _ = tx.send("mouse scroll 1".to_string());
                             mouse.perform_operation(MouseOperation::Scroll {
-                                vector: 3,
+                                vector: 1,
                                 direction: enigo::Axis::Vertical,
                             });
                         } else if hand.grab_strength > 0.9 {
                             if !is_dragging {
                                 mouse.perform_operation(MouseOperation::PressLeft);
                                 is_dragging = true;
-                                println!("mouse press left");
+                                let _ = tx.send("mouse press left".to_string());
                             }
-                            mouse.move_mouse(x as i32 * -4, z as i32 * 4, enigo::Coordinate::Abs);
+                            mouse.perform_operation(MouseOperation::Move {
+                                x: x as i32 * 4,
+                                y: y as i32 * -4,
+                                coordinate: enigo::Coordinate::Abs,
+                            });
                         } else if hand.pinch_distance < 15.0 {
                             if last_click_time.elapsed() >= click_debounce_duration {
                                 mouse.perform_operation(MouseOperation::ClickLeft);
-                                println!("mouse click left");
+                                let _ = tx.send("mouse click left".to_string());
                                 last_click_time = Instant::now();
                             } else {
-                                println!("mouse click debounced");
+                                let _ = tx.send("mouse click debounced".to_string());
                             }
                         } else {
                             if is_dragging {
                                 mouse.perform_operation(MouseOperation::ReleaseLeft);
-                                println!("mouse release left");
+                                let _ = tx.send("mouse release left".to_string());
                                 is_dragging = false;
                             }
                             mouse.perform_operation(MouseOperation::Move {
-                                x: x as i32 * -4,
-                                y: z as i32 * 4,
+                                x: x as i32 * 4,
+                                y: y as i32 * -4,
                                 coordinate: enigo::Coordinate::Abs,
                             });
                         }

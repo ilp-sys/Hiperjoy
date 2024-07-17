@@ -1,6 +1,6 @@
 extern crate enigo;
 
-use enigo::{Axis, Button, Coordinate, Enigo, Mouse, Settings, Direction};
+use enigo::{Axis, Button, Coordinate, Direction, Enigo, Mouse, Settings};
 
 pub struct MouseControl {
     controller: Enigo,
@@ -83,4 +83,3 @@ pub enum MouseOperation {
     ReleaseLeft,
     ReleaseRight,
 }
-

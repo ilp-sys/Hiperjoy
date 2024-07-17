@@ -47,37 +47,6 @@ pub fn connecting() -> Connection {
         _ => Msg::None,
     });
 
-    connection.wait_for("Close the hand".to_string(), |e| match e {
-        EventRef::Tracking(e) => {
-            if let Some(hand) = e.hands().first() {
-                let grab_strength = hand.grab_strength;
-                if grab_strength >= 1.0 {
-                    Msg::Success("The hand is closed".to_string())
-                } else {
-                    Msg::Progress(format!("Close the hand {:.0}%", grab_strength * 100.0))
-                }
-            } else {
-                Msg::Progress("Close the hand".to_string())
-            }
-        }
-        _ => Msg::None,
-    });
-
-    connection.wait_for("Open the hand".to_string(), |e| match e {
-        EventRef::Tracking(e) => {
-            if let Some(hand) = e.hands().first() {
-                let ungrab_strength = 1.0 - hand.grab_strength;
-                if ungrab_strength >= 0.999 {
-                    Msg::Success("The hand is opened".to_string())
-                } else {
-                    Msg::Progress(format!("Open the hand {:.0}%", ungrab_strength * 100.0))
-                }
-            } else {
-                Msg::Progress("Open the hand".to_string())
-            }
-        }
-        _ => Msg::None,
-    });
     connection
 }
 
@@ -120,12 +89,11 @@ pub fn leap_hand_sensor(tx: mpsc::Sender::<String>) {
                         let palm = hand.palm();
                         let pos = palm.position();
                         let x = pos.x;
-                        //let y = pos.y;
+                        let y = pos.y;
                         let z = pos.z;
                         //println!("{} {} {}", x, y, z);
 
                         if index_pointing_upwards(&mut hand.digits()) {
-                            //println!("mouse scroll -1");
                             let _ = tx.send("mouse scroll -1".to_string());
                             mouse.perform_operation(MouseOperation::Scroll {
                                 vector: -1,
@@ -142,30 +110,30 @@ pub fn leap_hand_sensor(tx: mpsc::Sender::<String>) {
                             if !is_dragging {
                                 mouse.perform_operation(MouseOperation::PressLeft);
                                 is_dragging = true;
-                                //println!("mouse press left");
                                 let _ = tx.send("mouse press left".to_string());
                             }
-                            mouse.move_mouse(x as i32 * -4, z as i32 * 4, enigo::Coordinate::Abs);
+                            mouse.perform_operation(MouseOperation::Move {
+                                x: x as i32 * 4,
+                                y: y as i32 * -4,
+                                coordinate: enigo::Coordinate::Abs,
+                            });
                         } else if hand.pinch_distance < 15.0 {
                             if last_click_time.elapsed() >= click_debounce_duration {
                                 mouse.perform_operation(MouseOperation::ClickLeft);
-                                //println!("mouse click left");
                                 let _ = tx.send("mouse click left".to_string());
                                 last_click_time = Instant::now();
                             } else {
-                                //println!("mouse click debounced");
                                 let _ = tx.send("mouse click debounced".to_string());
                             }
                         } else {
                             if is_dragging {
                                 mouse.perform_operation(MouseOperation::ReleaseLeft);
-                                //println!("mouse release left");
                                 let _ = tx.send("mouse release left".to_string());
                                 is_dragging = false;
                             }
                             mouse.perform_operation(MouseOperation::Move {
-                                x: x as i32 * -4,
-                                y: z as i32 * 4,
+                                x: x as i32 * 4,
+                                y: y as i32 * -4,
                                 coordinate: enigo::Coordinate::Abs,
                             });
                         }

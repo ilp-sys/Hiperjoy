@@ -24,7 +24,7 @@ const fetchWrapper = async () => {
     }
   } catch (error) {
     throw error;
-  }
+}
 };
 
 const fetchHello = async () => {
@@ -33,6 +33,7 @@ const fetchHello = async () => {
     const response = await fetch(url, {
       method: "GET",
     });
+
     if (response.ok) {
       const responseText = await response.text();
       return responseText;

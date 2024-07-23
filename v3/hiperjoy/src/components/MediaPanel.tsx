@@ -3,6 +3,11 @@ import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { useState, useEffect } from "react";
 
+import { Media } from "../interfaces/types";
+
+import { buildXml } from "../utils/buildXml";
+import { fetchWrapper } from "../utils/fetchers";
+
 const MediaContainer = styled(Box)({
   display: "flex",
   flexDirection: "column",
@@ -16,16 +21,19 @@ const MediaContainer = styled(Box)({
   boxShadow: "0 4px 10px rgba(0, 0, 0, 0.5)",
 });
 
-interface Media {
-  type: string;
-  src: string;
-}
-
 const MediaPanel: React.FC = () => {
   const [media, setMedia] = useState<Media[]>([]);
 
+  const xmlPayload = buildXml("Commands", {
+    action: {
+      "@type": "list",
+      filter: "type=Streamer;notopen",
+    },
+  });
   useEffect(() => {
-    console.log("fetch and locate contencts");
+    fetchWrapper(xmlPayload).then((response) => {
+      console.log(response);
+    });
     //setMedia
   }, []);
 

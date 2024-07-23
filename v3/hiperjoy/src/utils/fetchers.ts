@@ -1,10 +1,5 @@
-const fetchWrapper = async () => {
+const fetchWrapper = async (xmlPayload: string) => {
   const url = "http://127.0.0.1:8000/xmlcommand";
-  const xmlPayload = `
-      <Request>
-        <Type>CheckConnection</Type>
-      </Request>
-    `;
 
   try {
     const response = await fetch(url, {
@@ -24,7 +19,7 @@ const fetchWrapper = async () => {
     }
   } catch (error) {
     throw error;
-}
+  }
 };
 
 const fetchHello = async () => {

@@ -30,7 +30,7 @@ interface WallsAction {
 }
 
 interface ListAction {
-  action: "list";
+  type: "list";
   filter: String;
 }
 
@@ -46,6 +46,14 @@ interface ScheduleAction {
   type: "scheduler";
 }
 
+interface GetUUIDAction {
+  type: "get-uuid";
+}
+
+interface QuerySAAction {
+  type: "query-sa";
+}
+
 export type Command =
   | OpenCommand
   | ChangeCommand
@@ -58,4 +66,6 @@ export type Action =
   | ListAction
   | MuteAllAction
   | UnMuteAllAction
-  | ScheduleAction;
+  | ScheduleAction
+  | GetUUIDAction
+  | QuerySAAction;

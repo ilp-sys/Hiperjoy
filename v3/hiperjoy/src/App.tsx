@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 
-import Gamepad from "./Gamepad";
-import MediaPanel from "./MediaPanel";
+import Gamepad from "./components/Gamepad";
+import MediaPanel from "./components/MediaPanel";
 import SplashScreen from "./SplashScreen";
-import { fetchHello } from "./fetchers";
+import { fetchHello } from "./utils/fetchers";
 
-import Snackbar from '@mui/material/Snackbar';
+import Snackbar from "@mui/material/Snackbar";
 import Container from "@mui/material/Container";
 
 function App() {
@@ -15,30 +15,30 @@ function App() {
 
   useEffect(() => {
     fetchHello()
-      .then((response)=> {
+      .then((response) => {
         setConnString(response);
         setSnackbarOpen(true);
         setIsConnected(true);
       })
       .catch((error) => {
         console.error(error);
-      })
+      });
   }, []);
 
   const handleClose = () => {
     setSnackbarOpen(false);
-  }
+  };
 
   return (
     <>
       {isConnected ? (
         <Container>
-            <Snackbar
-              open={snackbarOpen}
-              autoHideDuration={6000}
-              onClose={handleClose}
-              message={`connected on ${connString}`}
-            />
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={handleClose}
+            message={`connected on ${connString}`}
+          />
           <MediaPanel />
           <Gamepad />
         </Container>

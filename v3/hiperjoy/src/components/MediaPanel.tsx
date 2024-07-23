@@ -2,8 +2,13 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { useState, useEffect } from "react";
+import { parseStringPromise } from "xml2js";
 
-import { Media } from "../interfaces/types";
+import {
+  ObjectsResponse,
+  ContentObject,
+  Instance,
+} from "../interfaces/xmlResponses";
 
 import { buildXml } from "../utils/buildXml";
 import { fetchWrapper } from "../utils/fetchers";
@@ -22,7 +27,7 @@ const MediaContainer = styled(Box)({
 });
 
 const MediaPanel: React.FC = () => {
-  const [media, setMedia] = useState<Media[]>([]);
+  const [media, setMedia] = useState<ContentObject[]>([]);
 
   const xmlPayload = buildXml("Commands", {
     action: {
@@ -31,10 +36,10 @@ const MediaPanel: React.FC = () => {
     },
   });
   useEffect(() => {
-    fetchWrapper(xmlPayload).then((response) => {
-      console.log(response);
-    });
-    //setMedia
+    fetchWrapper(xmlPayload)
+      .then((response) => parseStringPromise(response))
+      .then((parsedData) => setMedia(parsedData))
+      .catch((error) => console.log("failed to parse xml"));
   }, []);
 
   return (
@@ -46,13 +51,13 @@ const MediaPanel: React.FC = () => {
           <Box key={index} mb={2}>
             {item.type === "image" && (
               <img
-                src={item.src}
+                src={item.name}
                 alt={`media-${index}`}
                 style={{ width: "100%" }}
               />
             )}
             {item.type === "video" && (
-              <video src={item.src} controls style={{ width: "100%" }} />
+              <video src={item.name} controls style={{ width: "100%" }} />
             )}
           </Box>
         ))

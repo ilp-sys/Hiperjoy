@@ -24,10 +24,21 @@ interface ContentObject {
   Instance: Instance[];
 }
 
+interface Wall {
+  name: string;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  color: string;
+  wallgridh?: number;
+  wallgridv?: number;
+}
+
 interface ObjectsResponse {
   Objects: {
     Object: ContentObject[];
   };
 }
 
-export type { ObjectsResponse, ContentObject, Instance };
+export type { ObjectsResponse, ContentObject, Instance, Wall };

@@ -38,7 +38,7 @@ const MediaPanel: React.FC = () => {
   useEffect(() => {
     fetchWrapper(xmlPayload)
       .then((response) => parseStringPromise(response))
-      .then((parsedData) => setMedia(parsedData))
+      .then((parsedData) => setMedia(parsedData.Objects.Object))
       .catch((error) => console.log("failed to parse xml"));
   }, []);
 

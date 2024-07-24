@@ -1,11 +1,26 @@
 import { useEffect, useState } from "react";
 import { parseStringPromise } from "xml2js";
 
-import { Container, Typography, Card, CardContent, Grid } from "@mui/material";
+import { Box, Typography, Card, CardContent, Grid } from "@mui/material";
+import { styled } from '@mui/system';
 
 import { fetchWrapper } from "../utils/fetchers";
 import { Wall } from "../interfaces/xmlResponses";
 import { buildXml } from "../utils/buildXml";
+
+const MetaWallsContainer = styled(Box)({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  height: "100px",
+  width: "200px",
+  borderRadius: "20px",
+  padding: "20px",
+  gap: "20px",
+  boxShadow: "0 4px 10px rgba(0, 0, 0, 0.5)",
+});
+
 
 const MetaWalls: React.FC = () => {
   const [walls, setWalls] = useState<Wall[]>([]);
@@ -24,7 +39,7 @@ const MetaWalls: React.FC = () => {
   }, []);
 
   return (
-    <Container>
+    <MetaWallsContainer>
       <Typography variant="h4" gutterBottom>
         Walls 정보
       </Typography>
@@ -70,7 +85,7 @@ const MetaWalls: React.FC = () => {
           ))
         )}
       </Grid>
-    </Container>
+    </MetaWallsContainer>
   );
 };
 

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Gamepad from "./components/Gamepad";
 import MediaPanel from "./components/MediaPanel";
 import MetaWalls from "./components/MetaWalls";
+import HoverBox from "./components/HoverBox";
 import SplashScreen from "./SplashScreen";
 import { fetchHello } from "./utils/fetchers";
 
@@ -43,6 +44,7 @@ function App() {
           <MediaPanel />
           <Gamepad />
           <MetaWalls />
+          <HoverBox />
         </Container>
       ) : (
         <SplashScreen />

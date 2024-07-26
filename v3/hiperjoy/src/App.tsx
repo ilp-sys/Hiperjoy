@@ -1,19 +1,37 @@
 import { useState, useEffect } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
 
-import Gamepad from "./components/Gamepad";
-import MediaPanel from "./components/MediaPanel";
-import MetaWalls from "./components/MetaWalls";
-import HoverBox from "./components/HoverBox";
-import SplashScreen from "./SplashScreen";
 import { fetchHello } from "./utils/fetchers";
-import LabelBottomNavigation from "./components/LabelBottomNavagation";
-import Snackbar from "@mui/material/Snackbar";
-import Container from "@mui/material/Container";
+import SplashScreen from "./SplashScreen";
+import CameraScreen from "./CameraScreen";
+import FeedsScreen from "./FeedsScreen";
+import FoldersScreen from "./FoldersScreen";
+import WallInfoScreen from "./WallInfoScreen";
+
+import {
+  Container,
+  Snackbar,
+  Paper,
+  BottomNavigation,
+  BottomNavigationAction,
+} from "@mui/material";
+import FolderIcon from "@mui/icons-material/Folder";
+import MonitorRoundedIcon from "@mui/icons-material/MonitorRounded";
+import VideocamRoundedIcon from "@mui/icons-material/VideocamRounded";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+
+const hoverStyles = {
+  "&:hover": {
+    color: "primary.main",
+    backgroundColor: "rgba(0, 0, 0, 0.1)",
+  },
+};
 
 function App() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
   const [connString, setConnString] = useState("");
+  const [value, setValue] = useState(0);
 
   useEffect(() => {
     fetchHello()
@@ -27,12 +45,64 @@ function App() {
       });
   }, []);
 
+  const navigate = useNavigate();
+  const handleNavigationChange = (
+    event: React.ChangeEvent<{}>,
+    newValue: number
+  ) => {
+    setValue(newValue);
+    if (newValue === 0) {
+      navigate("/feeds");
+    } else if (newValue === 1) {
+      navigate("/wallinfo");
+    } else if (newValue === 2) {
+      navigate("/camera");
+    } else if (newValue === 3) {
+      navigate("/folder");
+    }
+  };
+
   const handleClose = () => {
     setSnackbarOpen(false);
   };
 
   return (
-    <>
+    <Container sx={{ align: "center" }}>
+      <Paper
+        sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
+        elevation={3}
+      >
+        <BottomNavigation
+          value={value}
+          onChange={handleNavigationChange}
+          showLabels
+        >
+          <BottomNavigationAction
+            label="Feeds"
+            value={0}
+            icon={<MonitorRoundedIcon />}
+            sx={hoverStyles}
+          />
+          <BottomNavigationAction
+            label="Wallinfo"
+            value={1}
+            icon={<InfoRoundedIcon />}
+            sx={hoverStyles}
+          />
+          <BottomNavigationAction
+            label="Camera"
+            value={2}
+            icon={<VideocamRoundedIcon />}
+            sx={hoverStyles}
+          />
+          <BottomNavigationAction
+            label="Folder"
+            value={3}
+            icon={<FolderIcon />}
+            sx={hoverStyles}
+          />
+        </BottomNavigation>
+      </Paper>
       {isConnected ? (
         <>
           <Snackbar
@@ -41,16 +111,17 @@ function App() {
             onClose={handleClose}
             message={`connected on ${connString}`}
           />
-          <HoverBox />
-          <MediaPanel />
-          <Gamepad />
-          <MetaWalls />
-          <LabelBottomNavigation />
+          <Routes>
+            <Route path="/feeds" element={<FeedsScreen />} />
+            <Route path="/wallinfo" element={<WallInfoScreen />} />
+            <Route path="/camera" element={<CameraScreen />} />
+            <Route path="/folder" element={<FoldersScreen />} />
+          </Routes>
         </>
       ) : (
         <SplashScreen />
       )}
-    </>
+    </Container>
   );
 }
 

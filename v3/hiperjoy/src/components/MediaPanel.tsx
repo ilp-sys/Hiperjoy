@@ -20,8 +20,6 @@ const MediaContainer = styled(Box)({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  height: "200px",
-  width: "300px",
   borderRadius: "10px",
   padding: "10px",
   marginBottom: "20px",

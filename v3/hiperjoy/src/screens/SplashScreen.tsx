@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import { styled } from "@mui/system";
-import logo from "./assets/hiperwall.png";
+import logo from "../assets/hiperwall.png";
 
 const SplashContainer = styled(Box)({
   display: "flex",

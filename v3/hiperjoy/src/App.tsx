@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 
 import { fetchHello } from "./utils/fetchers";
-import SplashScreen from "./SplashScreen";
-import CameraScreen from "./CameraScreen";
-import FeedsScreen from "./FeedsScreen";
-import FoldersScreen from "./FoldersScreen";
-import WallInfoScreen from "./WallInfoScreen";
+import SplashScreen from "./screens/SplashScreen";
+import CameraScreen from "./screens/CameraScreen";
+import FeedsScreen from "./screens/FeedsScreen";
+import FoldersScreen from "./screens/FoldersScreen";
+import WallInfoScreen from "./screens/WallInfoScreen";
 
 import {
   Container,

@@ -35,7 +35,7 @@ const RefreshButton = styled(IconButton)({
 });
 
 const MediaPanel: React.FC = () => {
-  const [media, setMedia] = useState<ContentObject[]>([]);
+  const [medias, setMedias] = useState<ContentObject[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const contentsDefaultPath = "C:\\Users\\Public\\HiperWall\\contents\\";
@@ -54,9 +54,7 @@ const MediaPanel: React.FC = () => {
   useEffect(() => {
     fetchWrapper(xmlPayload)
       .then((response) => parseStringPromise(response))
-      .then((parsedData) => {
-        setMedia(parsedData.Objects.Object);
-      })
+      .then((parsedData) => setMedias(parsedData.Objects.Object))
       .catch((error) => console.log("failed to parse xml", error));
   }, [refreshKey]);
 
@@ -65,21 +63,21 @@ const MediaPanel: React.FC = () => {
       <RefreshButton aria-label="refresh" onClick={handleRefresh}>
         <RefreshRoundedIcon />
       </RefreshButton>
-      {media.length === 0 ? (
+      {medias.length === 0 ? (
         <Typography>선택된 미디어가 없습니다.</Typography>
       ) : (
-        media.map((item, index) => (
+        medias.map((media, index) => (
           <Box key={index} mb={2}>
-            {item.type == "Image" && (
+            {media.type == "Image" && (
               <img
-                src={"file:\\" + `${contentsDefaultPath}` + `${item.name}`}
+                src={"file:\\" + `${contentsDefaultPath}` + `${media.name}`}
                 alt={`media-${index}`}
                 style={{ width: "100%" }}
               />
             )}
-            {item.type == "Movie" && (
+            {media.type == "Movie" && (
               <video
-                src={"file:\\" + `${contentsDefaultPath}` + `${item.name}`}
+                src={"file:\\" + `${contentsDefaultPath}` + `${media.name}`}
                 controls
                 style={{ width: "100%" }}
               />

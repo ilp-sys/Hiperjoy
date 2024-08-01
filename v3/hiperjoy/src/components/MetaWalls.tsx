@@ -20,7 +20,7 @@ const MetaWalls: React.FC = () => {
   useEffect(() => {
     fetchWrapper(xmlPayload)
       .then((response) => parseStringPromise(response))
-      .then((parsedData) => setWalls(parsedData.Walls))
+      .then((parsedData) => setWalls(parsedData.Walls.Wall))
       .catch((error) => console.log("failed to parse xml", error));
   }, []);
 

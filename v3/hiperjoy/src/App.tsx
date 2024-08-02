@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate, Navigate } from "react-router-dom";
 
 import { fetchHello } from "./utils/fetchers";
 import SplashScreen from "./screens/SplashScreen";
@@ -71,43 +71,43 @@ function App() {
 
   return (
     <Container sx={{ align: "center" }}>
-      <Paper
-        sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
-        elevation={3}
-      >
-        <BottomNavigation
-          value={value}
-          onChange={handleNavigationChange}
-          showLabels
-        >
-          <BottomNavigationAction
-            label="Feeds"
-            value={0}
-            icon={<MonitorRoundedIcon />}
-            sx={hoverStyles}
-          />
-          <BottomNavigationAction
-            label="Wallinfo"
-            value={1}
-            icon={<InfoRoundedIcon />}
-            sx={hoverStyles}
-          />
-          <BottomNavigationAction
-            label="Camera"
-            value={2}
-            icon={<VideocamRoundedIcon />}
-            sx={hoverStyles}
-          />
-          <BottomNavigationAction
-            label="Folder"
-            value={3}
-            icon={<FolderIcon />}
-            sx={hoverStyles}
-          />
-        </BottomNavigation>
-      </Paper>
       {isConnected ? (
         <>
+          <Paper
+            sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
+            elevation={3}
+          >
+            <BottomNavigation
+              value={value}
+              onChange={handleNavigationChange}
+              showLabels
+            >
+              <BottomNavigationAction
+                label="Feeds"
+                value={0}
+                icon={<MonitorRoundedIcon />}
+                sx={hoverStyles}
+              />
+              <BottomNavigationAction
+                label="Wallinfo"
+                value={1}
+                icon={<InfoRoundedIcon />}
+                sx={hoverStyles}
+              />
+              <BottomNavigationAction
+                label="Camera"
+                value={2}
+                icon={<VideocamRoundedIcon />}
+                sx={hoverStyles}
+              />
+              <BottomNavigationAction
+                label="Folder"
+                value={3}
+                icon={<FolderIcon />}
+                sx={hoverStyles}
+              />
+            </BottomNavigation>
+          </Paper>
           <Snackbar
             open={snackbarOpen}
             autoHideDuration={6000}
@@ -115,10 +115,12 @@ function App() {
             message={`connected on ${connString}`}
           />
           <Routes>
+            <Route path="/" element={<Navigate to="/feeds" />} />
             <Route path="/feeds" element={<FeedsScreen />} />
             <Route path="/wallinfo" element={<WallInfoScreen />} />
             <Route path="/camera" element={<CameraScreen />} />
             <Route path="/folder" element={<FoldersScreen />} />
+            <Route path="*" element={<Navigate to="/feeds" />} />
           </Routes>
         </>
       ) : (

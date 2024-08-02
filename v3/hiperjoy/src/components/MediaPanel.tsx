@@ -99,13 +99,18 @@ const mockMedias: ContentObject[] = [
   },
 ];
 
+interface Position {
+  x: number;
+  y: number;
+}
+
+type PositionsMap = { [key: string]: Position };
+
 const MediaPanel: React.FC = () => {
   //const [medias, setMedias] = useState<ContentObject[]>([]);
   const [medias, setMedias] = useState<ContentObject[]>(mockMedias);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [positions, setPositions] = useState<{
-    [key: string]: { x: number; y: number };
-  }>({});
+  const [positions, setPositions] = useState<PositionsMap>({});
 
   const contentsDefaultPath = "C:\\Users\\Public\\HiperWall\\contents\\";
 
@@ -167,8 +172,11 @@ const MediaPanel: React.FC = () => {
       .then((parsedData) => setMedias(parsedData.Objects.Object))
       .catch((error) => console.log("failed to parse xml", error));
     setPositions(
-      medias.reduce((acc, media) => {
-        acc[media.Instance.id] = { x: 0, y: 0 };
+      medias.reduce((acc: PositionsMap, media: ContentObject) => {
+        media.Instance.forEach((instance: Instance) => {
+          const [x, y] = instance.position.split(",").map(Number);
+          acc[instance.id] = { x, y };
+        });
         return acc;
       }, {})
     );
@@ -182,38 +190,40 @@ const MediaPanel: React.FC = () => {
       {medias.length === 0 ? (
         <Typography>선택된 미디어가 없습니다.</Typography>
       ) : (
-        medias.map((media, index) => (
-          <Box
-            key={index}
-            mb={2}
-            draggable
-            onDragStart={(event) => handleDragStart(event, media.Instance.id)}
-            onDrag={(event) => handleDrag(event, media.Instance.id)}
-            onDragEnd={(event) => handleDragEnd(event, media.Instance.id)}
-            style={{
-              cursor: "grab",
-              position: "absolute",
-              left: `${positions[media.Instance.id]?.x}px`,
-              top: `${positions[media.Instance.id]?.y}px`,
-              transform: `translate(-50%, -50%)`,
-            }}
-          >
-            {media.type == "Image" && (
-              <img
-                src={"file:\\" + `${contentsDefaultPath}` + `${media.name}`}
-                alt={`media-${index}`}
-                style={{ width: "100%" }}
-              />
-            )}
-            {media.type == "Movie" && (
-              <video
-                src={"file:\\" + `${contentsDefaultPath}` + `${media.name}`}
-                controls
-                style={{ width: "100%" }}
-              />
-            )}
-          </Box>
-        ))
+        medias.map((media, index) =>
+          media.Instance.map((instance) => (
+            <Box
+              key={index}
+              mb={2}
+              draggable
+              onDragStart={(event) => handleDragStart(event, instance.id)}
+              onDrag={(event) => handleDrag(event, instance.id)}
+              onDragEnd={(event) => handleDragEnd(event, instance.id)}
+              style={{
+                cursor: "grab",
+                position: "absolute",
+                left: `${positions[instance.id]?.x}px`,
+                top: `${positions[instance.id]?.y}px`,
+                transform: `translate(-50%, -50%)`,
+              }}
+            >
+              {media.type == "Image" && (
+                <img
+                  src={"file:\\" + `${contentsDefaultPath}` + `${media.name}`}
+                  alt={`media-${index}`}
+                  style={{ width: "100%" }}
+                />
+              )}
+              {media.type == "Movie" && (
+                <video
+                  src={"file:\\" + `${contentsDefaultPath}` + `${media.name}`}
+                  controls
+                  style={{ width: "100%" }}
+                />
+              )}
+            </Box>
+          ))
+        )
       )}
     </MediaContainer>
   );

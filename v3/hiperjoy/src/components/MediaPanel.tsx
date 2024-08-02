@@ -25,7 +25,7 @@ interface Position {
 type PositionsMap = { [key: string]: Position };
 
 const MediaPanel: React.FC = () => {
-  const [medias, setMedias] = useState<ContentObject[]>(mockMedias);
+  const [medias, setMedias] = useState<ContentObject[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const [positions, setPositions] = useState<PositionsMap>({});
 
@@ -94,26 +94,40 @@ const MediaPanel: React.FC = () => {
   useEffect(() => {
     fetchWrapper(xmlPayload)
       .then((response) => parseStringPromise(response))
-      .then((parsedData) => setMedias(parsedData.Objects.Object))
+      .then((parsedData) => {
+        const pdoo = parsedData.Objects.Object;
+        if (pdoo) {
+          setMedias(pdoo);
+          setPositions(
+            pdoo.reduce((acc: PositionsMap, media: ContentObject) => {
+              media.Instance.forEach((instance: Instance) => {
+                const [x, y] = instance.position.split(",").map(Number);
+                acc[instance.id] = { x, y };
+              });
+              return acc;
+            }, {})
+          );
+        }
+      })
       .catch((error) => console.log("failed to parse xml", error));
-    setPositions(
-      medias.reduce((acc: PositionsMap, media: ContentObject) => {
-        media.Instance.forEach((instance: Instance) => {
-          const [x, y] = instance.position.split(",").map(Number);
-          acc[instance.id] = { x, y };
-        });
-        return acc;
-      }, {})
-    );
   }, [refreshKey]);
 
   return (
-    <Container>
+    <Container
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+      }}
+    >
       <RefreshButton aria-label="refresh" onClick={handleRefresh}>
         <RefreshRoundedIcon />
       </RefreshButton>
       {medias.length === 0 ? (
-        <Typography>선택된 미디어가 없습니다.</Typography>
+        <Typography color="text.secondary" variant="overline">
+          선택된 미디어가 없습니다.
+        </Typography>
       ) : (
         medias.map((media, index) =>
           media.Instance.map((instance) => (

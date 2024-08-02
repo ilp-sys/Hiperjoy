@@ -1,12 +1,23 @@
 import { useEffect, useState } from "react";
 import { parseStringPromise } from "xml2js";
 
-import { Box, Typography, Card, CardContent, Grid } from "@mui/material";
+import {
+  Box,
+  Container,
+  Divider,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+} from "@mui/material";
 import { styled } from "@mui/system";
 
 import { fetchWrapper } from "../utils/fetchers";
 import { Wall } from "../interfaces/xmlResponses";
 import { buildXml } from "../utils/buildXml";
+import NoWallsConnected from "./NoWallsConnected";
 
 const MetaWalls: React.FC = () => {
   const [walls, setWalls] = useState<Wall[]>([]);
@@ -25,53 +36,62 @@ const MetaWalls: React.FC = () => {
   }, []);
 
   return (
-    <>
-      <Typography variant="h4" gutterBottom>
-        하이퍼월 정보 표시
+    <Container>
+      <Typography
+        variant="h4"
+        align="center"
+        mt="5vh"
+        gutterBottom
+        sx={{ fontWeight: "bold" }}
+      >
+        하이퍼월 연결 정보 표시
       </Typography>
-      <Grid container spacing={2}>
-        {walls.length === 0 ? (
-          <Typography>연결된 Wall이 없습니다.</Typography>
-        ) : (
-          walls.map((wall, index) => (
-            <Grid item xs={12} md={6} lg={4} key={index}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {wall.name}
-                  </Typography>
-                  <Typography variant="body1">
-                    <strong>Left:</strong> {wall.left}
-                  </Typography>
-                  <Typography variant="body1">
-                    <strong>Top:</strong> {wall.top}
-                  </Typography>
-                  <Typography variant="body1">
-                    <strong>Width:</strong> {wall.width}
-                  </Typography>
-                  <Typography variant="body1">
-                    <strong>Height:</strong> {wall.height}
-                  </Typography>
-                  <Typography variant="body1">
-                    <strong>Color:</strong> {wall.color}
-                  </Typography>
-                  {wall.wallgridh !== undefined && (
-                    <Typography variant="body1">
-                      <strong>Grid H:</strong> {wall.wallgridh}
-                    </Typography>
-                  )}
-                  {wall.wallgridv !== undefined && (
-                    <Typography variant="body1">
-                      <strong>Grid V:</strong> {wall.wallgridv}
-                    </Typography>
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
-          ))
-        )}
-      </Grid>
-    </>
+      <Divider />
+      {walls.length === 0 ? (
+        <NoWallsConnected />
+      ) : (
+        <>
+          <Typography variant="h6" gutterBottom>
+            {walls.length} walls connected
+          </Typography>
+          <List>
+            {walls.map((wall, index) => (
+              <ListItem key={index} alignItems="flex-start">
+                <ListItemAvatar>
+                  <Avatar sx={{ bgcolor: wall.color || "defaultColor" }}>
+                    {wall.name.charAt(0)}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={wall.name}
+                  secondary={
+                    <>
+                      <Typography variant="body2" color="text.secondary">
+                        <strong>Left:</strong> {wall.left} &nbsp;
+                        <strong>Top:</strong> {wall.top} &nbsp;
+                        <strong>Width:</strong> {wall.width} &nbsp;
+                        <strong>Height:</strong> {wall.height} &nbsp;
+                        <strong>Color:</strong> {wall.color}
+                      </Typography>
+                      {wall.wallgridh !== undefined && (
+                        <Typography variant="body2" color="text.secondary">
+                          <strong>Grid H:</strong> {wall.wallgridh}
+                        </Typography>
+                      )}
+                      {wall.wallgridv !== undefined && (
+                        <Typography variant="body2" color="text.secondary">
+                          <strong>Grid V:</strong> {wall.wallgridv}
+                        </Typography>
+                      )}
+                    </>
+                  }
+                />
+              </ListItem>
+            ))}
+          </List>
+        </>
+      )}
+    </Container>
   );
 };
 

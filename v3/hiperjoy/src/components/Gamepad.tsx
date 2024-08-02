@@ -1,11 +1,15 @@
 import React from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import { styled } from "@mui/system";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import ExtensionIcon from "@mui/icons-material/Extension";
+
+import {
+  ArrowUpward,
+  ArrowDownward,
+  ArrowBack,
+  ArrowForward,
+  Extension,
+  Minimize,
+} from "@mui/icons-material";
 
 const GamepadContainer = styled(Box)({
   display: "flex",
@@ -41,27 +45,37 @@ const ActionButtons = styled(Box)({
   gap: "10px",
 });
 
+const MinimizeButton = styled(IconButton)({
+  position: "absolute",
+  top: "10px",
+  right: "10px",
+});
+
 const Gamepad: React.FC = () => {
+  const handleMinimizeClick = () => {
+    console.log("minizied!");
+  };
   return (
     <GamepadContainer>
+      <MinimizeButton onClick={handleMinimizeClick} />
       <DPad>
         <GameButton disabled />
         <GameButton>
-          <ArrowUpwardIcon />
+          <ArrowUpward />
         </GameButton>
         <GameButton disabled />
         <GameButton>
-          <ArrowBackIcon />
+          <ArrowBack />
         </GameButton>
         <GameButton>
-          <ExtensionIcon />
+          <Extension />
         </GameButton>
         <GameButton>
-          <ArrowForwardIcon />
+          <ArrowForward />
         </GameButton>
         <GameButton disabled />
         <GameButton>
-          <ArrowDownwardIcon />
+          <ArrowDownward />
         </GameButton>
         <GameButton disabled />
       </DPad>

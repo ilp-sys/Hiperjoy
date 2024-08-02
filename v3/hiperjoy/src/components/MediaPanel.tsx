@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, IconButton } from "@mui/material";
+import { Box, Container, Typography, IconButton } from "@mui/material";
 import { styled } from "@mui/system";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import { useState, useEffect } from "react";
@@ -9,95 +9,13 @@ import { ContentObject, Instance } from "../interfaces/xmlResponses";
 
 import { buildXml } from "../utils/buildXml";
 import { fetchWrapper } from "../utils/fetchers";
-
-const MediaContainer = styled(Box)({
-  position: "relative",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: "10px",
-  padding: "10px",
-  marginBottom: "20px",
-  boxShadow: "0 4px 10px rgba(0, 0, 0, 0.5)",
-});
+import { mockMedias } from "../test/mockMedias";
 
 const RefreshButton = styled(IconButton)({
   position: "absolute",
   top: "10px",
   right: "10px",
 });
-
-const mockMedias: ContentObject[] = [
-  {
-    name: "Image\\image\\pexels-amol-mande-2683946.jpg.tif",
-    type: "Image",
-    width: 6016,
-    height: 4000,
-    Instance: [
-      {
-        id: "HWobj636920446.9",
-        position: "-1510.5752,-589.1223",
-        size: "2500.0,1667.0",
-        rotation: 0.0,
-        transparency: 1.0,
-        rgb: "1.0,1.0,1.0",
-        bw: 0.0,
-        mosaic: 0.0,
-        layer: 2,
-        showlabel: false,
-        borderRGB: "0088ce",
-        bordervis: 0,
-      },
-    ],
-  },
-  {
-    name: "Image\\MMI\\이력트렌드.jpg",
-    type: "Image",
-    width: 1920,
-    height: 1080,
-    Instance: [
-      {
-        id: "HWobj-1165174442.3",
-        position: "-4531.7207,780.4593",
-        size: "2500.0,1412.0",
-        rotation: 0.0,
-        transparency: 1.0,
-        rgb: "1.0,1.0,1.0",
-        bw: 0.0,
-        mosaic: 0.0,
-        layer: 1,
-        showlabel: false,
-        borderRGB: "0088ce",
-        bordervis: 0,
-      },
-    ],
-  },
-  {
-    name: "video\\Hiperwall Software Demo _ Korean Version_hd(1080p).mp4.hwv",
-    type: "Movie",
-    width: 1920,
-    height: 1080,
-    label: "HIPERWALL GUIDE",
-    Instance: [
-      {
-        id: "HWobj-1293972907.10",
-        position: "2754.28,1298.6661",
-        size: "6156.0,3478.0",
-        rotation: 0.0,
-        transparency: 1.0,
-        rgb: "1.0,1.0,1.0",
-        bw: 0.0,
-        mosaic: 0.0,
-        layer: 3,
-        audio: "0,unmuted",
-        showlabel: true,
-        borderRGB: "0088ce",
-        bordervis: 0,
-      },
-    ],
-  },
-];
 
 interface Position {
   x: number;
@@ -190,7 +108,7 @@ const MediaPanel: React.FC = () => {
   }, [refreshKey]);
 
   return (
-    <MediaContainer>
+    <Container>
       <RefreshButton aria-label="refresh" onClick={handleRefresh}>
         <RefreshRoundedIcon />
       </RefreshButton>
@@ -232,7 +150,7 @@ const MediaPanel: React.FC = () => {
           ))
         )
       )}
-    </MediaContainer>
+    </Container>
   );
 };
 

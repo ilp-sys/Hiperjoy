@@ -1,5 +1,12 @@
 import deviceImage from "../assets/leap-motion-controller-2.png";
-import { Badge, Container, Divider, Stack, Typography } from "@mui/material";
+import {
+  Badge,
+  Container,
+  Divider,
+  Stack,
+  Typography,
+  Button,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 const imgStyle = {
@@ -71,10 +78,16 @@ export default function () {
           />
         </StyledBadge>
         <Typography variant="h6">Leap Motion Controller 2</Typography>
-        <Typography color="text.secondary" variant="body2">
+        <Typography
+          color="text.secondary"
+          variant="body2"
+          gutterBottom
+          mb="3vh"
+        >
           Pinstriped cornflower blue cotton blouse takes you on a walk to the
           park or just down the hall.
         </Typography>
+        <Button variant="outlined">connect</Button>
       </Stack>
     </Container>
   );

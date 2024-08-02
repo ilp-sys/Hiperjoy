@@ -2,25 +2,26 @@ interface Instance {
   id: string;
   position: string;
   size: string;
-  rotation: string;
-  transparency: string;
+  rotation: number;
+  transparency: number;
   rgb: string;
-  bw: string;
-  mosaic: string;
-  layer: string;
-  showlabel: string;
+  bw: number;
+  mosaic: number;
+  layer: number;
+  audio?: string;
+  showlabel: boolean;
   borderRGB: string;
-  bordervis: string;
+  bordervis: number;
 }
 
 interface ContentObject {
   type: string;
   name: string;
-  width: string;
-  height: string;
+  width: number;
+  height: number;
   uuid?: string;
   said?: string;
-  label: string;
+  label?: string;
   Instance: Instance[];
 }
 

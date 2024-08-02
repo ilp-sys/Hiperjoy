@@ -22,9 +22,9 @@ export default function FeedsUtilityButtons() {
   });
 
   const handleMuteClick = () => {
-    fetchWrapper(muteState ? muteXmlPayload : unmuteXmlPayload).then(
-      (response) => console.log(response)
-    );
+    fetchWrapper(muteState ? muteXmlPayload : unmuteXmlPayload)
+      .then((response) => console.log(response))
+      .catch((error) => console.error(error));
     setMuteState(!muteState);
   };
 

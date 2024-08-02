@@ -19,6 +19,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import MonitorRoundedIcon from "@mui/icons-material/MonitorRounded";
 import VideocamRoundedIcon from "@mui/icons-material/VideocamRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import { TouchFree } from "./TouchFree_Tooling";
 
 const hoverStyles = {
   "&:hover": {
@@ -44,6 +45,8 @@ function App() {
         console.error(error);
       });
   }, []);
+
+  //TouchFree.Init();
 
   const navigate = useNavigate();
   const handleNavigationChange = (

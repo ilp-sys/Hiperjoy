@@ -12,12 +12,20 @@ import {
   ListItemAvatar,
   Avatar,
 } from "@mui/material";
+import FourKIcon from "@mui/icons-material/FourK";
 import { styled } from "@mui/system";
 
 import { fetchWrapper } from "../utils/fetchers";
 import { Wall } from "../interfaces/xmlResponses";
 import { buildXml } from "../utils/buildXml";
 import NoWallsConnected from "./NoWallsConnected";
+
+const StyledListItem = styled(ListItem)(({ theme }) => ({
+  border: "1px solid #ddd",
+  borderRadius: "4px",
+  marginBottom: theme.spacing(1),
+  padding: theme.spacing(2),
+}));
 
 const MetaWalls: React.FC = () => {
   const [walls, setWalls] = useState<Wall[]>([]);
@@ -51,16 +59,14 @@ const MetaWalls: React.FC = () => {
         <NoWallsConnected />
       ) : (
         <>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="overline" gutterBottom color="primary.light">
             {walls.length} walls connected
           </Typography>
           <List>
             {walls.map((wall, index) => (
-              <ListItem key={index} alignItems="flex-start">
+              <StyledListItem key={index} alignItems="flex-start">
                 <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: wall.color || "defaultColor" }}>
-                    {wall.name.charAt(0)}
-                  </Avatar>
+                  <FourKIcon />
                 </ListItemAvatar>
                 <ListItemText
                   primary={wall.name}
@@ -86,7 +92,7 @@ const MetaWalls: React.FC = () => {
                     </>
                   }
                 />
-              </ListItem>
+              </StyledListItem>
             ))}
           </List>
         </>

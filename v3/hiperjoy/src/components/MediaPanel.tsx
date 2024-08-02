@@ -107,7 +107,6 @@ interface Position {
 type PositionsMap = { [key: string]: Position };
 
 const MediaPanel: React.FC = () => {
-  //const [medias, setMedias] = useState<ContentObject[]>([]);
   const [medias, setMedias] = useState<ContentObject[]>(mockMedias);
   const [refreshKey, setRefreshKey] = useState(0);
   const [positions, setPositions] = useState<PositionsMap>({});
@@ -154,9 +153,17 @@ const MediaPanel: React.FC = () => {
     event: React.DragEvent<HTMLDivElement>,
     id: string
   ) => {
-    const { offsetX, offsetY } = JSON.parse(
-      event.dataTransfer.getData("application/json")
-    );
+    const data = event.dataTransfer.getData("application/json");
+    if (!data) {
+      console.warn("No data found in dataTransfer");
+      return;
+    }
+
+    const { offsetX, offsetY } = JSON.parse(data);
+    if (typeof offsetX !== "number" || typeof offsetY !== "number") {
+      console.warn("Invalid data format");
+      return;
+    }
     setPositions((prevPositions) => ({
       ...prevPositions,
       [id]: {

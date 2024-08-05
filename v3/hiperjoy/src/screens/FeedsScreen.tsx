@@ -1,15 +1,16 @@
+import { Divider } from "@mui/material";
+
 import Gamepad from "../components/Gamepad";
 import MediaPanel from "../components/MediaPanel";
-import HoverBox from "../components/HoverBox";
 import FeedsUtilityButtons from "../components/FeedsUtilityButtons";
 
-export default function () {
+export default function FeedsScreen() {
   return (
     <>
       <FeedsUtilityButtons />
-      <HoverBox />
+      <Divider />
       <MediaPanel />
-      <Gamepad />
+      {/* <Gamepad /> */}
     </>
   );
 }

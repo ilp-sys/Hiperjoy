@@ -3,6 +3,12 @@ interface Position {
   y: number;
 }
 
-type PositionsMap = { [key: string]: Position };
+interface PositionsMap {
+  [key: string]: Position;
+}
 
-export type { Position, PositionsMap };
+interface ScalesMap {
+  [key: string]: number;
+}
+
+export type { Position, PositionsMap, ScalesMap };

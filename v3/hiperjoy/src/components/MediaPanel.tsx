@@ -2,16 +2,19 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useRecoilValue } from "recoil";
 
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Container, Typography, IconButton } from "@mui/material";
+import { Delete, VolumeOff } from "@mui/icons-material";
 
 import { ContentObject, Instance } from "../interfaces/xmlResponses";
-import { Position, PositionsMap } from "../interfaces/utiilTypes";
+import { PositionsMap, ScalesMap } from "../interfaces/utiilTypes";
 import { selectedMediasState } from "../recoil-states";
 
 import { mockMedias } from "../test/mockMedias";
 
 const MediaPanel: React.FC = () => {
   const [positions, setPositions] = useState<PositionsMap>({});
+  const [hoveredId, setHoveredId] = useState<string>("");
+  const [scales, setScales] = useState<ScalesMap>({});
   const selectedMedias = useRecoilValue(selectedMediasState);
 
   const contentsDefaultPath = "C:\\Users\\Public\\HiperWall\\contents\\";
@@ -65,6 +68,21 @@ const MediaPanel: React.FC = () => {
     }));
   };
 
+  const handleMouseEnter = (id: string) => setHoveredId(id);
+  const handleMouseLeave = () => setHoveredId("");
+
+  const handleWheel = (event: React.WheelEvent<HTMLDivElement>, id: string) => {
+    const delta = event.deltaY;
+    setScales((prevScales) => {
+      const currentScale = prevScales[id] || 1;
+      const newScale = Math.min(
+        Math.max(currentScale + (delta > 0 ? -0.1 : 0.1), 0.5),
+        2
+      );
+      return { ...prevScales, [id]: newScale };
+    });
+  };
+
   useEffect(() => {
     setPositions(
       selectedMedias.reduce((acc: PositionsMap, media: ContentObject) => {
@@ -100,12 +118,20 @@ const MediaPanel: React.FC = () => {
               onDragStart={(event) => handleDragStart(event, instance.id)}
               onDrag={(event) => handleDrag(event, instance.id)}
               onDragEnd={(event) => handleDragEnd(event, instance.id)}
+              onMouseEnter={() => handleMouseEnter(instance.id)}
+              onMouseLeave={handleMouseLeave}
+              onWheel={(event) => handleWheel(event, instance.id)}
               style={{
                 cursor: "grab",
                 position: "absolute",
                 left: `${positions[instance.id]?.x}px`,
                 top: `${positions[instance.id]?.y}px`,
-                transform: `translate(-50%, -50%)`,
+                transform: `translate(-50%, -50%) scale(${
+                  hoveredId === instance.id ? 1.3 : scales[instance.id] || 1
+                })`,
+                transition: "transform 0.1s",
+                border:
+                  hoveredId === instance.id ? "1px solid #1945E8" : "none",
               }}
             >
               {selectedMedia.type == "Image" && (
@@ -121,6 +147,35 @@ const MediaPanel: React.FC = () => {
                   controls
                   style={{ width: "100%" }}
                 />
+              )}
+              {hoveredId === instance.id && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    transition: "opacity 0.3s",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    borderRadius: "4px",
+                  }}
+                >
+                  <IconButton
+                    size="small"
+                    color="inherit"
+                    sx={{ color: "#fff" }}
+                  >
+                    <Delete />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    color="inherit"
+                    sx={{ color: "#fff" }}
+                  >
+                    <VolumeOff />
+                  </IconButton>
+                </Box>
               )}
             </Box>
           ))

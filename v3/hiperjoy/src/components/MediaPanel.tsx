@@ -1,46 +1,20 @@
 import React from "react";
-import { Box, Container, Typography, IconButton } from "@mui/material";
-import { styled } from "@mui/system";
-import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import { useState, useEffect } from "react";
-import { parseStringPromise } from "xml2js";
+import { useRecoilValue } from "recoil";
+
+import { Box, Container, Typography } from "@mui/material";
 
 import { ContentObject, Instance } from "../interfaces/xmlResponses";
+import { Position, PositionsMap } from "../interfaces/utiilTypes";
+import { selectedMediasState } from "../recoil-states";
 
-import { buildXml } from "../utils/buildXml";
-import { fetchWrapper } from "../utils/fetchers";
 import { mockMedias } from "../test/mockMedias";
 
-const RefreshButton = styled(IconButton)({
-  position: "absolute",
-  top: "10px",
-  right: "10px",
-});
-
-interface Position {
-  x: number;
-  y: number;
-}
-
-type PositionsMap = { [key: string]: Position };
-
 const MediaPanel: React.FC = () => {
-  const [medias, setMedias] = useState<ContentObject[]>([]);
-  const [refreshKey, setRefreshKey] = useState(0);
   const [positions, setPositions] = useState<PositionsMap>({});
+  const selectedMedias = useRecoilValue(selectedMediasState);
 
   const contentsDefaultPath = "C:\\Users\\Public\\HiperWall\\contents\\";
-
-  const xmlPayload = buildXml("Commands", {
-    action: {
-      "@type": "list",
-      filter: "open",
-    },
-  });
-
-  const handleRefresh = () => {
-    setRefreshKey((prevKey) => prevKey + 1);
-  };
 
   const handleDragStart = (
     event: React.DragEvent<HTMLDivElement>,
@@ -92,25 +66,16 @@ const MediaPanel: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchWrapper(xmlPayload)
-      .then((response) => parseStringPromise(response))
-      .then((parsedData) => {
-        const pdoo = parsedData.Objects.Object;
-        if (pdoo) {
-          setMedias(pdoo);
-          setPositions(
-            pdoo.reduce((acc: PositionsMap, media: ContentObject) => {
-              media.Instance.forEach((instance: Instance) => {
-                const [x, y] = instance.position.split(",").map(Number);
-                acc[instance.id] = { x, y };
-              });
-              return acc;
-            }, {})
-          );
-        }
-      })
-      .catch((error) => console.log("failed to parse xml", error));
-  }, [refreshKey]);
+    setPositions(
+      selectedMedias.reduce((acc: PositionsMap, media: ContentObject) => {
+        media.Instance.forEach((instance: Instance) => {
+          const [x, y] = instance.position.split(",").map(Number);
+          acc[instance.id] = { x, y };
+        });
+        return acc;
+      }, {})
+    );
+  }, [selectedMedias]);
 
   return (
     <Container
@@ -121,16 +86,13 @@ const MediaPanel: React.FC = () => {
         textAlign: "center",
       }}
     >
-      <RefreshButton aria-label="refresh" onClick={handleRefresh}>
-        <RefreshRoundedIcon />
-      </RefreshButton>
-      {medias.length === 0 ? (
-        <Typography color="text.secondary" variant="overline">
+      {selectedMedias.length === 0 ? (
+        <Typography color="text.secondary" mt="20vh">
           선택된 미디어가 없습니다.
         </Typography>
       ) : (
-        medias.map((media, index) =>
-          media.Instance.map((instance) => (
+        selectedMedias.map((selectedMedia, index) =>
+          selectedMedia.Instance.map((instance) => (
             <Box
               key={index}
               mb={2}
@@ -146,16 +108,16 @@ const MediaPanel: React.FC = () => {
                 transform: `translate(-50%, -50%)`,
               }}
             >
-              {media.type == "Image" && (
+              {selectedMedia.type == "Image" && (
                 <img
-                  src={"file:\\" + `${contentsDefaultPath}` + `${media.name}`}
+                  src={`file:\\${contentsDefaultPath}${selectedMedia.name}`}
                   alt={`media-${index}`}
                   style={{ width: "100%" }}
                 />
               )}
-              {media.type == "Movie" && (
+              {selectedMedia.type == "Movie" && (
                 <video
-                  src={"file:\\" + `${contentsDefaultPath}` + `${media.name}`}
+                  src={`file:\\${contentsDefaultPath}${selectedMedia.name}`}
                   controls
                   style={{ width: "100%" }}
                 />

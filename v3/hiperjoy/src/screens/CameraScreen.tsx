@@ -48,7 +48,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-export default function () {
+export default function CameraScreen() {
   return (
     <Container>
       <Typography

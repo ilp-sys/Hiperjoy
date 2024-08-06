@@ -1,7 +1,7 @@
-import MetaWalls from "../components/MetaWalls";
 import { Container } from "@mui/material";
+import MetaWalls from "../components/MetaWalls";
 
-export default function () {
+export default function WallInfoScreen() {
   return (
     <Container>
       <MetaWalls />

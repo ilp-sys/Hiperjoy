@@ -2,30 +2,20 @@ import { useEffect, useState } from "react";
 import { parseStringPromise } from "xml2js";
 
 import {
-  Box,
   Container,
   Divider,
   Typography,
   List,
-  ListItem,
   ListItemText,
   ListItemAvatar,
-  Avatar,
 } from "@mui/material";
 import FourKIcon from "@mui/icons-material/FourK";
-import { styled } from "@mui/system";
 
 import { fetchWrapper } from "../utils/fetchers";
 import { Wall } from "../interfaces/xmlResponses";
 import { buildXml } from "../utils/buildXml";
 import NoWallsConnected from "./NoWallsConnected";
-
-const StyledListItem = styled(ListItem)(({ theme }) => ({
-  border: "1px solid #ddd",
-  borderRadius: "4px",
-  marginBottom: theme.spacing(1),
-  padding: theme.spacing(2),
-}));
+import { StyledListItem } from "./StyleListItem";
 
 const MetaWalls: React.FC = () => {
   const [walls, setWalls] = useState<Wall[]>([]);

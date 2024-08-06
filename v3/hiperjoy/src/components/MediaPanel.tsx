@@ -1,105 +1,64 @@
-import React, { useState, useEffect } from "react";
-import { useRecoilValue } from "recoil";
-
+import React, { useState, useCallback } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { Container, Typography } from "@mui/material";
-
-import { ContentObject, Instance } from "../interfaces/xmlResponses";
-import { PositionsMap, ScalesMap } from "../interfaces/utilTypes";
 import { selectedMediasState } from "../recoil-states";
 import { MediaItem } from "./MediaItem";
+import { ContentObject, Instance } from "../interfaces/xmlResponses";
 import { mockMedias } from "../test/mockMedias";
-
-const useMediaDragAndScale = (selectedMedias: ContentObject[]) => {
-  const [positions, setPositions] = useState<PositionsMap>({});
-  const [scales, setScales] = useState<ScalesMap>({});
-
-  useEffect(() => {
-    const newPositions: PositionsMap = selectedMedias.reduce(
-      (acc: PositionsMap, media: ContentObject) => {
-        media.Instance.forEach((instance: Instance) => {
-          const [x, y] = instance.position.split(",").map(Number);
-          acc[instance.id] = { x, y };
-        });
-        return acc;
-      },
-      {}
-    );
-
-    setPositions(newPositions);
-  }, [selectedMedias]);
-
-  const handleDragStart = (
-    event: React.DragEvent<HTMLDivElement>,
-    id: string
-  ) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const offsetX = event.clientX - rect.left;
-    const offsetY = event.clientY - rect.top;
-    event.dataTransfer.setData(
-      "application/json",
-      JSON.stringify({ id, offsetX, offsetY })
-    );
-    event.dataTransfer.effectAllowed = "move";
-  };
-
-  const handleDrag = (event: React.DragEvent<HTMLDivElement>, id: string) => {
-    if (event.clientX === 0 && event.clientY === 0) return;
-    setPositions((prevPositions) => ({
-      ...prevPositions,
-      [id]: { x: event.clientX, y: event.clientY },
-    }));
-  };
-
-  const handleDragEnd = (
-    event: React.DragEvent<HTMLDivElement>,
-    id: string
-  ) => {
-    const data = event.dataTransfer.getData("application/json");
-    if (!data) return;
-
-    const { offsetX, offsetY } = JSON.parse(data);
-    setPositions((prevPositions) => ({
-      ...prevPositions,
-      [id]: {
-        x: event.clientX - offsetX,
-        y: event.clientY - offsetY,
-      },
-    }));
-  };
-
-  const handleWheel = (event: React.WheelEvent<HTMLDivElement>, id: string) => {
-    const delta = event.deltaY;
-    setScales((prevScales) => {
-      const currentScale = prevScales[id] || 1;
-      const newScale = Math.min(
-        Math.max(currentScale + (delta > 0 ? -0.1 : 0.1), 0.5),
-        2
-      );
-      return { ...prevScales, [id]: newScale };
-    });
-  };
-
-  return {
-    positions,
-    scales,
-    handleDragStart,
-    handleDrag,
-    handleDragEnd,
-    handleWheel,
-  };
-};
 
 const MediaPanel: React.FC = () => {
   const selectedMedias = useRecoilValue(selectedMediasState);
-  const {
-    positions,
-    scales,
-    handleDragStart,
-    handleDrag,
-    handleDragEnd,
-    handleWheel,
-  } = useMediaDragAndScale(selectedMedias);
+  const setSelectedMedias = useSetRecoilState(selectedMediasState);
   const [hoveredId, setHoveredId] = useState<string>("");
+
+  const onDrag = useCallback(
+    (
+      event: React.DragEvent<HTMLDivElement>,
+      mediaUuid: string,
+      instanceId: string
+    ) => {
+      const newX = event.clientX;
+      const newY = event.clientY;
+
+      setSelectedMedias((medias) =>
+        medias.map((media) => {
+          if (media.uuid !== mediaUuid) return media;
+          return {
+            ...media,
+            Instance: media.Instance.map((instance) => {
+              if (instance.id !== instanceId) return instance;
+              return {
+                ...instance,
+                position: `${newX},${newY}`,
+              };
+            }),
+          };
+        })
+      );
+    },
+    [setSelectedMedias]
+  );
+
+  const onScale = useCallback(
+    (deltaScale: number, mediaUuid: string, instanceId: string) => {
+      setSelectedMedias((medias) =>
+        medias.map((media) => {
+          if (media.uuid !== mediaUuid) return media;
+          return {
+            ...media,
+            Instance: media.Instance.map((instance) => {
+              if (instance.id !== instanceId) return instance;
+              return {
+                ...instance,
+                size: (parseFloat(instance.size) * (1 + deltaScale)).toString(),
+              };
+            }),
+          };
+        })
+      );
+    },
+    [setSelectedMedias]
+  );
 
   return (
     <Container
@@ -115,20 +74,25 @@ const MediaPanel: React.FC = () => {
           선택된 미디어가 없습니다.
         </Typography>
       ) : (
-        selectedMedias.flatMap((media) =>
-          media.Instance.map((instance) => (
+        selectedMedias.flatMap((media: ContentObject) =>
+          media.Instance.map((instance: Instance) => (
             <MediaItem
               key={instance.id}
               media={media}
               instance={instance}
-              position={positions[instance.id] || { x: 0, y: 0 }}
-              scale={scales[instance.id] || 1}
-              onDragStart={handleDragStart}
-              onDrag={handleDrag}
-              onDragEnd={handleDragEnd}
-              onWheel={handleWheel}
+              position={{
+                x: parseFloat(instance.position.split(",")[0]),
+                y: parseFloat(instance.position.split(",")[1]),
+              }}
+              scale={parseFloat(instance.size)}
+              onDragStart={(e) => onDrag(e, media.uuid!, instance.id)}
+              onDrag={(e) => onDrag(e, media.uuid!, instance.id)}
+              onDragEnd={(e) => onDrag(e, media.uuid!, instance.id)}
+              onWheel={(e) =>
+                onScale(e.deltaY * -0.01, media.uuid!, instance.id)
+              }
               isHovered={hoveredId === instance.id}
-              onMouseEnter={setHoveredId}
+              onMouseEnter={() => setHoveredId(instance.id)}
               onMouseLeave={() => setHoveredId("")}
             />
           ))

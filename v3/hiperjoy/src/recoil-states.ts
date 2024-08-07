@@ -6,4 +6,9 @@ const selectedMediasState = atom<ContentObject[]>({
   default: [],
 });
 
-export { selectedMediasState };
+const currentMediaState = atom<ContentObject | null>({
+  key: "currentMediaState",
+  default: null,
+});
+
+export { selectedMediasState, currentMediaState };

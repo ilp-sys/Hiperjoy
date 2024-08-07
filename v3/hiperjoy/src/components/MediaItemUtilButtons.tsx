@@ -2,7 +2,7 @@ import { ButtonGroup, IconButton } from "@mui/material";
 
 import { useRecoilValue } from "recoil";
 
-import { currentMediaState } from "../recoil-states";
+import { currentContentObjectState } from "../recoil-states";
 import { fetchWrapper } from "../utils/fetchers";
 import { buildXml } from "../utils/buildXml";
 
@@ -15,7 +15,7 @@ import {
 } from "@mui/icons-material";
 
 export default function MediaItemUtilButtons() {
-  const currentMedia = useRecoilValue(currentMediaState);
+  const currentContentObject = useRecoilValue(currentContentObjectState);
 
   const incXmlPayload = buildXml("Commands", {
     command: {
@@ -68,7 +68,7 @@ export default function MediaItemUtilButtons() {
     fetchWrapper(rrXmlPayload);
   };
 
-  if (!currentMedia) {
+  if (!currentContentObject) {
     return <></>;
   }
 

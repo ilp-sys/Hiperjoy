@@ -17,20 +17,26 @@ const CustomPagination = () => {
     const fetchThumbnails = async () => {
       setLoading(true);
       try {
-        const thumbnamePromises = selectedMedias.map(async (media) => {
+        const thumbnailPromises = selectedMedias.map(async (media) => {
           const previewXmlPayload = buildXml("Commands", {
             command: {
               "@type": "preview",
               name: `${media.name}`,
             },
           });
-          const responseText = await fetchWrapper(previewXmlPayload);
-          const imageBlob = new Blob([responseText], { type: "image/png" });
-          const imageUrl = URL.createObjectURL(imageBlob);
-          return { name: media.name, url: imageUrl };
+
+          const response = await fetchWrapper(previewXmlPayload);
+
+          if (response instanceof Blob) {
+            const imageUrl = URL.createObjectURL(response);
+            return { name: media.name, url: imageUrl };
+          } else {
+            console.error("Unexpected response type:", typeof response);
+            throw new Error("Unexpected response type");
+          }
         });
 
-        const results = await Promise.all(thumbnamePromises);
+        const results = await Promise.all(thumbnailPromises);
         const thumbnailsDict: Thumbnails = results.reduce<Thumbnails>(
           (acc, { name, url }) => {
             acc[name] = url;
@@ -39,7 +45,6 @@ const CustomPagination = () => {
           {}
         );
         setThumbnails(thumbnailsDict);
-        console.log(thumbnails);
       } catch (error) {
         console.error("Error fetching thumbnails:", error);
       }

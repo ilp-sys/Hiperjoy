@@ -30,7 +30,7 @@ const hoverStyles = {
 
 function App() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
   const [connString, setConnString] = useState("");
   const [value, setValue] = useState(0);
 

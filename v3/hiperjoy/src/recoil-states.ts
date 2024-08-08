@@ -6,4 +6,18 @@ const selectedMediasState = atom<ContentObject[]>({
   default: [],
 });
 
-export { selectedMediasState };
+const currentContentObjectState = atom<ContentObject | null>({
+  key: "currentContentObjectState",
+  default: null,
+});
+
+const currentInstanceIDState = atom<string>({
+  key: "currnetInstanceIDState",
+  default: "",
+});
+
+export {
+  selectedMediasState,
+  currentContentObjectState,
+  currentInstanceIDState,
+};

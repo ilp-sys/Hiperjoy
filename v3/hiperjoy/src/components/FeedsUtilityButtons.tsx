@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ButtonGroup, IconButton } from "@mui/material";
 import { VolumeOff, VolumeUp, Refresh } from "@mui/icons-material";
@@ -48,6 +48,10 @@ export default function FeedsUtilityButtons() {
       })
       .catch((error) => console.log("failed to parse xml", error));
   };
+
+  useEffect(() => {
+    handleRefreshClick();
+  }, []);
 
   return (
     <ButtonGroup variant="text" aria-label="feeds utility buttons">

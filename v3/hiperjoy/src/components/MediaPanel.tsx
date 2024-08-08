@@ -1,103 +1,119 @@
-import React, { useState, useCallback } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { Container, Typography } from "@mui/material";
-import { selectedMediasState } from "../recoil-states";
-import { MediaItem } from "./MediaItem";
-import { ContentObject, Instance } from "../interfaces/xmlResponses";
-import { mockMedias } from "../test/mockMedias";
+import React from "react";
+import { Container, IconButton, Typography } from "@mui/material";
+import {
+  ArrowBack,
+  ArrowForward,
+  ArrowUpward,
+  ArrowDownward,
+} from "@mui/icons-material";
+import { useRecoilValue } from "recoil";
+
+import { currentContentObjectState } from "../recoil-states";
+
+const contentsDefaultPath = "C:\\Users\\Public\\HiperWall\\contents\\";
 
 const MediaPanel: React.FC = () => {
-  const selectedMedias = useRecoilValue(selectedMediasState);
-  const setSelectedMedias = useSetRecoilState(selectedMediasState);
-  const [hoveredId, setHoveredId] = useState<string>("");
+  const currentContentObject = useRecoilValue(currentContentObjectState);
 
-  const onDrag = useCallback(
-    (
-      event: React.DragEvent<HTMLDivElement>,
-      mediaUuid: string,
-      instanceId: string
-    ) => {
-      const newX = event.clientX;
-      const newY = event.clientY;
-
-      setSelectedMedias((medias) =>
-        medias.map((media) => {
-          if (media.uuid !== mediaUuid) return media;
-          return {
-            ...media,
-            Instance: media.Instance.map((instance) => {
-              if (instance.id !== instanceId) return instance;
-              return {
-                ...instance,
-                position: `${newX},${newY}`,
-              };
-            }),
-          };
-        })
-      );
-    },
-    [setSelectedMedias]
-  );
-
-  const onScale = useCallback(
-    (deltaScale: number, mediaUuid: string, instanceId: string) => {
-      setSelectedMedias((medias) =>
-        medias.map((media) => {
-          if (media.uuid !== mediaUuid) return media;
-          return {
-            ...media,
-            Instance: media.Instance.map((instance) => {
-              if (instance.id !== instanceId) return instance;
-              return {
-                ...instance,
-                size: (parseFloat(instance.size) * (1 + deltaScale)).toString(),
-              };
-            }),
-          };
-        })
-      );
-    },
-    [setSelectedMedias]
-  );
-
-  return (
-    <Container
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
-      }}
-    >
-      {selectedMedias.length === 0 ? (
+  if (!currentContentObject) {
+    return (
+      <Container
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "80vh",
+          width: "100%",
+        }}
+      >
         <Typography color="text.secondary" mt="20vh">
           선택된 미디어가 없습니다.
         </Typography>
-      ) : (
-        selectedMedias.flatMap((media: ContentObject) =>
-          media.Instance.map((instance: Instance) => (
-            <MediaItem
-              key={instance.id}
-              media={media}
-              instance={instance}
-              position={{
-                x: parseFloat(instance.position.split(",")[0]),
-                y: parseFloat(instance.position.split(",")[1]),
-              }}
-              scale={parseFloat(instance.size)}
-              onDragStart={(e) => onDrag(e, media.uuid!, instance.id)}
-              onDrag={(e) => onDrag(e, media.uuid!, instance.id)}
-              onDragEnd={(e) => onDrag(e, media.uuid!, instance.id)}
-              onWheel={(e) =>
-                onScale(e.deltaY * -0.01, media.uuid!, instance.id)
-              }
-              isHovered={hoveredId === instance.id}
-              onMouseEnter={() => setHoveredId(instance.id)}
-              onMouseLeave={() => setHoveredId("")}
+      </Container>
+    );
+  }
+
+  return (
+    <Container
+      style={{
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "80vh",
+        width: "100%",
+      }}
+    >
+      {/* Media Content */}
+      <div style={{ position: "relative" }}>
+        <div
+          style={{
+            width: "300px",
+            height: "300px",
+            backgroundColor: "#e0e0e0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {currentContentObject.type === "Image" && (
+            <img
+              src={`file:\\${contentsDefaultPath}${currentContentObject.name}`}
+              alt="Media Content"
+              style={{ maxWidth: "100%", maxHeight: "100%" }}
             />
-          ))
-        )
-      )}
+          )}
+          {currentContentObject.type === "Movie" && (
+            <video
+              src={`file:\\${contentsDefaultPath}${currentContentObject.name}`}
+              controls
+              style={{ maxWidth: "100%", maxHeight: "100%" }}
+            />
+          )}
+        </div>
+
+        {/* Arrow Buttons */}
+        <IconButton
+          style={{
+            position: "absolute",
+            top: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
+        >
+          <ArrowUpward />
+        </IconButton>
+        <IconButton
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
+        >
+          <ArrowDownward />
+        </IconButton>
+        <IconButton
+          style={{
+            position: "absolute",
+            left: 0,
+            top: "50%",
+            transform: "translateY(-50%)",
+          }}
+        >
+          <ArrowBack />
+        </IconButton>
+        <IconButton
+          style={{
+            position: "absolute",
+            right: 0,
+            top: "50%",
+            transform: "translateY(-50%)",
+          }}
+        >
+          <ArrowForward />
+        </IconButton>
+      </div>
     </Container>
   );
 };

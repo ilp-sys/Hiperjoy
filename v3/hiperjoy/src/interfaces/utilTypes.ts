@@ -3,4 +3,8 @@ interface Position {
   y: number;
 }
 
-export type { Position };
+interface Thumbnails {
+  [key: string]: string;
+}
+
+export type { Position, Thumbnails };

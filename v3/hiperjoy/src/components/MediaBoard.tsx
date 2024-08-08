@@ -6,53 +6,40 @@ import { styled } from "@mui/system";
 import { selectedMediasState } from "../recoil-states";
 import { fetchWrapper } from "../utils/fetchers";
 import { buildXml } from "../utils/buildXml";
-
-const Thumbnail = styled(Box)(({ theme, selected }) => ({
-  width: 50,
-  height: 50,
-  backgroundColor: selected ? theme.palette.primary.main : "transparent",
-  border: selected ? "2px solid white" : "none",
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  overflow: "hidden",
-  borderRadius: 4,
-  "& img": {
-    maxWidth: "100%",
-    maxHeight: "100%",
-  },
-}));
+import { Thumbnails } from "../interfaces/utilTypes";
 
 const CustomPagination = () => {
   const selectedMedias = useRecoilValue(selectedMediasState);
-  const [thumbnails, setThumbnails] = useState({});
-  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [thumbnails, setThumbnails] = useState<Thumbnails>({});
 
   useEffect(() => {
     const fetchThumbnails = async () => {
       setLoading(true);
       try {
-        const thumbnailPromises = selectedMedias.map(async (media) => {
+        const thumbnamePromises = selectedMedias.map(async (media) => {
           const previewXmlPayload = buildXml("Commands", {
             command: {
               "@type": "preview",
               name: `${media.name}`,
             },
           });
-          fetchWrapper(previewXmlPayload).then((response) =>
-            console.log(response)
-          );
-          //TODO: parse the response
-          return { id: media.name, src: URL.createObjectURL(blob) };
+          const responseText = await fetchWrapper(previewXmlPayload);
+          const imageBlob = new Blob([responseText], { type: "image/png" });
+          const imageUrl = URL.createObjectURL(imageBlob);
+          return { name: media.name, url: imageUrl };
         });
-        const thumbnailResults = await Promise.all(thumbnailPromises);
-        const thumbnailMap = thumbnailResults.reduce((acc, thumbnail) => {
-          acc[thumbnail.name] = thumbnail.src;
-          return acc;
-        }, {});
-        setThumbnails(thumbnailMap);
+
+        const results = await Promise.all(thumbnamePromises);
+        const thumbnailsDict: Thumbnails = results.reduce<Thumbnails>(
+          (acc, { name, url }) => {
+            acc[name] = url;
+            return acc;
+          },
+          {}
+        );
+        setThumbnails(thumbnailsDict);
+        console.log(thumbnails);
       } catch (error) {
         console.error("Error fetching thumbnails:", error);
       }
@@ -60,6 +47,9 @@ const CustomPagination = () => {
     };
 
     fetchThumbnails();
+    return () => {
+      Object.values(thumbnails).forEach((url) => URL.revokeObjectURL(url));
+    };
   }, [selectedMedias]);
 
   if (loading) {
@@ -67,22 +57,19 @@ const CustomPagination = () => {
   }
 
   return (
-    <Box display="flex" alignItems="center">
-      {selectedMedias.map((media, index) => (
-        <Thumbnail
-          key={media.name}
-          selected={currentPage === index + 1}
-          onClick={() => setCurrentPage(index + 1)}
-        >
+    <Box display="flex" alignItems="center" flexWrap="wrap">
+      {selectedMedias.map((media) => (
+        <Box key={media.name} p={1} m={1}>
           {thumbnails[media.name] ? (
             <img
               src={thumbnails[media.name]}
               alt={`Thumbnail for ${media.name}`}
+              style={{ maxWidth: "150px", maxHeight: "150px" }}
             />
           ) : (
             <p>No Image</p>
           )}
-        </Thumbnail>
+        </Box>
       ))}
     </Box>
   );

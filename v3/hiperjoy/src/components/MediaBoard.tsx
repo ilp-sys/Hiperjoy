@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { Box, Skeleton } from "@mui/material";
-import { styled } from "@mui/system";
 
 import { selectedMediasState } from "../recoil-states";
 import { fetchWrapper } from "../utils/fetchers";
 import { buildXml } from "../utils/buildXml";
 import { Thumbnails } from "../interfaces/utilTypes";
+import {
+  currentContentObjectState,
+  currentInstanceIDState,
+} from "../recoil-states";
+import { useSetRecoilState } from "recoil";
+import { ContentObject } from "../interfaces/xmlResponses";
 
 const CustomPagination = () => {
   const selectedMedias = useRecoilValue(selectedMediasState);
   const [loading, setLoading] = useState(true);
   const [thumbnails, setThumbnails] = useState<Thumbnails>({});
+
+  const setCurrentContentObject = useSetRecoilState(currentContentObjectState);
+  const setCurrentInstanceID = useSetRecoilState(currentInstanceIDState);
 
   useEffect(() => {
     const fetchThumbnails = async () => {
@@ -57,10 +65,16 @@ const CustomPagination = () => {
     };
   }, [selectedMedias]);
 
+  const handleImageClick = (media: ContentObject) => {
+    setCurrentContentObject(media);
+    setCurrentInstanceID(media.Instance[0].id);
+  };
+
   if (loading) {
     return <Skeleton variant="rounded" />;
   }
 
+  //TODO: iter by instance, not media
   return (
     <Box display="flex" alignItems="center" flexWrap="wrap">
       {selectedMedias.map((media) => (
@@ -70,6 +84,7 @@ const CustomPagination = () => {
               src={thumbnails[media.name]}
               alt={`Thumbnail for ${media.name}`}
               style={{ maxWidth: "150px", maxHeight: "150px" }}
+              onClick={() => handleImageClick(media)}
             />
           ) : (
             <p>No Image</p>

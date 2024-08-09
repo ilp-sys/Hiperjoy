@@ -14,7 +14,7 @@ import { parseStringPromise } from "xml2js";
 
 import { fetchWrapper } from "../utils/fetchers";
 import { buildXml } from "../utils/buildXml";
-import { StyledListItem } from "./StyleListItem";
+import { StyledListItem } from "./StyledListItem";
 
 function NoContentsAvailabel() {
   return (

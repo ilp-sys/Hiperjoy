@@ -26,7 +26,7 @@ const MediaPanel: React.FC = () => {
           width: "100%",
         }}
       >
-        <Typography color="text.secondary" mt="20vh">
+        <Typography color="text.secondary" mt="10vh">
           선택된 미디어가 없습니다.
         </Typography>
       </Container>

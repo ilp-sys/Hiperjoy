@@ -15,7 +15,7 @@ import { fetchWrapper } from "../utils/fetchers";
 import { Wall } from "../interfaces/xmlResponses";
 import { buildXml } from "../utils/buildXml";
 import NoWallsConnected from "./NoWallsConnected";
-import { StyledListItem } from "./StyleListItem";
+import { StyledListItem } from "./StyledListItem";
 
 const MetaWalls: React.FC = () => {
   const [walls, setWalls] = useState<Wall[]>([]);

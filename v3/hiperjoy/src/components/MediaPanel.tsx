@@ -11,6 +11,8 @@ import {
 import { thumbnailsState } from "../recoil-states";
 import { useCurrentInstance } from "../utils/useCurrentInstance";
 import { currentContentObjectState } from "../recoil-states";
+import { buildXml } from "../utils/buildXml";
+import { fetchWrapper } from "../utils/fetchers";
 
 const MediaPanel: React.FC = () => {
   const currentInstance = useCurrentInstance();
@@ -42,6 +44,54 @@ const MediaPanel: React.FC = () => {
     );
   }
 
+  const arrUpPayload = buildXml("Commands", {
+    command: {
+      "@type": "change",
+      id: currentInstance.id,
+      rx: 25,
+    },
+  });
+
+  const arrDownPayload = buildXml("Commands", {
+    command: {
+      "@type": "change",
+      id: currentInstance.id,
+      rx: -25,
+    },
+  });
+
+  const arrLeftPayload = buildXml("Commands", {
+    command: {
+      "@type": "change",
+      id: currentInstance.id,
+      ry: -25,
+    },
+  });
+
+  const arrRightPayload = buildXml("Commands", {
+    command: {
+      "@type": "change",
+      id: currentInstance.id,
+      ry: 25,
+    },
+  });
+
+  const handleArrowUpClick = () => {
+    fetchWrapper(arrUpPayload).catch((error) => console.error(error));
+  };
+
+  const handleArrowDownClick = () => {
+    fetchWrapper(arrDownPayload).catch((error) => console.error(error));
+  };
+
+  const handleArrowLeftClick = () => {
+    fetchWrapper(arrLeftPayload).catch((error) => console.error(error));
+  };
+
+  const handleArrowRightClick = () => {
+    fetchWrapper(arrRightPayload).catch((error) => console.error(error));
+  };
+
   return (
     <>
       {/* Media Content */}
@@ -72,6 +122,7 @@ const MediaPanel: React.FC = () => {
             left: "50%",
             transform: "translateX(-50%)",
           }}
+          onClick={handleArrowUpClick}
         >
           <ArrowUpward />
         </IconButton>
@@ -82,6 +133,7 @@ const MediaPanel: React.FC = () => {
             left: "50%",
             transform: "translateX(-50%)",
           }}
+          onClick={handleArrowDownClick}
         >
           <ArrowDownward />
         </IconButton>
@@ -92,6 +144,7 @@ const MediaPanel: React.FC = () => {
             top: "50%",
             transform: "translateY(-50%)",
           }}
+          onClick={handleArrowLeftClick}
         >
           <ArrowBack />
         </IconButton>
@@ -102,6 +155,7 @@ const MediaPanel: React.FC = () => {
             top: "50%",
             transform: "translateY(-50%)",
           }}
+          onClick={handleArrowRightClick}
         >
           <ArrowForward />
         </IconButton>

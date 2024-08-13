@@ -9,14 +9,15 @@ import { Thumbnails } from "../interfaces/utilTypes";
 import {
   currentContentObjectState,
   currentInstanceIDState,
+  thumbnailsState,
 } from "../recoil-states";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { ContentObject } from "../interfaces/xmlResponses";
 
 const CustomPagination = () => {
   const selectedMedias = useRecoilValue(selectedMediasState);
+  const [thumbnails, setThumbnails] = useRecoilState(thumbnailsState);
   const [loading, setLoading] = useState(true);
-  const [thumbnails, setThumbnails] = useState<Thumbnails>({});
 
   const setCurrentContentObject = useSetRecoilState(currentContentObjectState);
   const setCurrentInstanceID = useSetRecoilState(currentInstanceIDState);
@@ -63,7 +64,7 @@ const CustomPagination = () => {
     return () => {
       Object.values(thumbnails).forEach((url) => URL.revokeObjectURL(url));
     };
-  }, [selectedMedias]);
+  }, [selectedMedias, setThumbnails]);
 
   const handleImageClick = (media: ContentObject) => {
     setCurrentContentObject(media);

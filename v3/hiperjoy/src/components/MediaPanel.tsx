@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 import { Box, Container, IconButton, Typography } from "@mui/material";
 import {
   ArrowBack,
@@ -6,16 +7,24 @@ import {
   ArrowUpward,
   ArrowDownward,
 } from "@mui/icons-material";
-import { useRecoilValue } from "recoil";
 
+import { thumbnailsState } from "../recoil-states";
+import { useCurrentInstance } from "../utils/useCurrentInstance";
 import { currentContentObjectState } from "../recoil-states";
 
-const contentsDefaultPath = "C:\\Users\\Public\\HiperWall\\contents\\";
-
 const MediaPanel: React.FC = () => {
+  const currentInstance = useCurrentInstance();
+  const thumbnails = useRecoilValue(thumbnailsState);
   const currentContentObject = useRecoilValue(currentContentObjectState);
+  const [imgSrc, setImgSrc] = useState<string>("");
 
-  if (!currentContentObject) {
+  useEffect(() => {
+    if (currentContentObject) {
+      setImgSrc(thumbnails[currentContentObject.name]);
+    }
+  }, [currentContentObject, thumbnails]);
+
+  if (!currentInstance) {
     return (
       <Container
         style={{
@@ -48,20 +57,11 @@ const MediaPanel: React.FC = () => {
             position: "relative",
           }}
         >
-          {currentContentObject.type === "Image" && (
-            <img
-              src={`file:\\${contentsDefaultPath}${currentContentObject.name}`}
-              alt="Media Content"
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
-            />
-          )}
-          {currentContentObject.type === "Movie" && (
-            <video
-              src={`file:\\${contentsDefaultPath}${currentContentObject.name}`}
-              controls
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
-            />
-          )}
+          <img
+            src={imgSrc}
+            alt="Media Content"
+            style={{ maxWidth: "100%", maxHeight: "100%" }}
+          />
         </Box>
 
         {/* Arrow Buttons */}

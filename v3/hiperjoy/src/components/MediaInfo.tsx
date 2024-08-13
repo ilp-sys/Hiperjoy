@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Grid } from "@mui/material";
+import { Card, CardContent, Divider, Typography, Grid } from "@mui/material";
 import { useCurrentInstance } from "../utils/useCurrentInstance";
 
 export default function MediaInfo() {
@@ -6,7 +6,7 @@ export default function MediaInfo() {
 
   if (!currentInstance) {
     return (
-      <Card>
+      <Card sx={{ height: "43vh" }}>
         <CardContent>
           <Typography variant="body2" color="textSecondary">
             No instance selected or instance not found.
@@ -17,11 +17,12 @@ export default function MediaInfo() {
   }
 
   return (
-    <Card>
+    <Card sx={{ height: "43vh" }}>
       <CardContent>
         <Typography variant="h6" gutterBottom>
           Instance Details
         </Typography>
+        <Divider sx={{ mb: 3 }} />
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <Typography variant="body1">

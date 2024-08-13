@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, IconButton, Typography } from "@mui/material";
+import { Box, Container, IconButton, Typography } from "@mui/material";
 import {
   ArrowBack,
   ArrowForward,
@@ -22,7 +22,7 @@ const MediaPanel: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          height: "80vh",
+          height: "100%",
           width: "100%",
         }}
       >
@@ -34,26 +34,18 @@ const MediaPanel: React.FC = () => {
   }
 
   return (
-    <Container
-      style={{
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "80vh",
-        width: "100%",
-      }}
-    >
+    <>
       {/* Media Content */}
       <div style={{ position: "relative" }}>
-        <div
-          style={{
+        <Box
+          sx={{
             width: "300px",
             height: "300px",
             backgroundColor: "#e0e0e0",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            position: "relative",
           }}
         >
           {currentContentObject.type === "Image" && (
@@ -70,7 +62,7 @@ const MediaPanel: React.FC = () => {
               style={{ maxWidth: "100%", maxHeight: "100%" }}
             />
           )}
-        </div>
+        </Box>
 
         {/* Arrow Buttons */}
         <IconButton
@@ -114,7 +106,7 @@ const MediaPanel: React.FC = () => {
           <ArrowForward />
         </IconButton>
       </div>
-    </Container>
+    </>
   );
 };
 

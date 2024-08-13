@@ -1,4 +1,4 @@
-import { Divider, Stack } from "@mui/material";
+import { Box, Divider } from "@mui/material";
 
 import FeedsUtilityButtons from "../components/FeedsUtilityButtons";
 import MediaBoard from "../components/MediaBoard";
@@ -11,10 +11,20 @@ export default function FeedsScreen() {
     <>
       <FeedsUtilityButtons />
       <MediaBoard />
-      <Divider />
+      <Divider sx={{ mb: 1 }} />
       <MediaItemUtilButtons />
-      <MediaPanel />
-      <MediaInfo />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "stretch",
+          mt: 2,
+          gap: 2,
+        }}
+      >
+        <MediaPanel />
+        <MediaInfo />
+      </Box>
     </>
   );
 }

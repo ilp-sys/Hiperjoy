@@ -78,20 +78,24 @@ const CustomPagination = () => {
   //TODO: iter by instance, not media
   return (
     <Box display="flex" alignItems="center" flexWrap="wrap">
-      {selectedMedias.map((media) => (
-        <Box key={media.name} p={1} m={1}>
-          {thumbnails[media.name] ? (
-            <img
-              src={thumbnails[media.name]}
-              alt={`Thumbnail for ${media.name}`}
-              style={{ maxWidth: "150px", maxHeight: "150px" }}
-              onClick={() => handleImageClick(media)}
-            />
-          ) : (
-            <p>No Image</p>
-          )}
-        </Box>
-      ))}
+      {selectedMedias && selectedMedias.length > 0 ? (
+        selectedMedias.map((media) => (
+          <Box key={media.name} p={1} m={1}>
+            {thumbnails[media.name] ? (
+              <img
+                src={thumbnails[media.name]}
+                alt={`Thumbnail for ${media.name}`}
+                style={{ maxWidth: "150px", maxHeight: "150px" }}
+                onClick={() => handleImageClick(media)}
+              />
+            ) : (
+              <p>No Image</p>
+            )}
+          </Box>
+        ))
+      ) : (
+        <></>
+      )}
     </Box>
   );
 };

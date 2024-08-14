@@ -9,10 +9,12 @@ import { selectedMediasState } from "../recoil-states";
 
 import { parseStringPromise } from "xml2js";
 import { useSetRecoilState } from "recoil";
+import { useRefreshSelectedMedias } from "../utils/useRefreshSelectedMedias";
 
 export default function FeedsUtilityButtons() {
   const [muteState, setMuteState] = useState(false);
   const setSelectedMedias = useSetRecoilState(selectedMediasState);
+  const refreshSelectedMedias = useRefreshSelectedMedias();
 
   const muteXmlPayload = buildXml("Commands", {
     action: {
@@ -40,18 +42,9 @@ export default function FeedsUtilityButtons() {
     setMuteState(!muteState);
   };
 
-  const handleRefreshClick = () => {
-    fetchWrapper(listXmlPayload)
-      .then((response) => parseStringPromise(response))
-      .then((parsedData) => {
-        setSelectedMedias(parsedData.Objects.Object);
-      })
-      .catch((error) => console.log("failed to parse xml", error));
-  };
-
   useEffect(() => {
-    handleRefreshClick();
-  }, []);
+    refreshSelectedMedias();
+  }, [refreshSelectedMedias]);
 
   return (
     <ButtonGroup variant="text" aria-label="feeds utility buttons">
@@ -69,7 +62,7 @@ export default function FeedsUtilityButtons() {
       </IconButton>
       <IconButton
         aria-label="refresh"
-        onClick={handleRefreshClick}
+        onClick={refreshSelectedMedias}
         size="large"
         color="primary"
       >

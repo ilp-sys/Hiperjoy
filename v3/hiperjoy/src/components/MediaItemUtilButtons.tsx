@@ -2,6 +2,8 @@ import { ButtonGroup, IconButton } from "@mui/material";
 import { fetchWrapper } from "../utils/fetchers";
 import { buildXml } from "../utils/buildXml";
 import { useCurrentInstance } from "../utils/useCurrentInstance";
+import { useRefreshSelectedMedias } from "../utils/useRefreshSelectedMedias";
+
 import {
   Add,
   Remove,
@@ -12,7 +14,8 @@ import {
 import { Instance } from "../interfaces/xmlResponses";
 
 export default function MediaItemUtilButtons() {
-  const currentInstance = useCurrentInstance() as Instance | null;
+  const currentInstance = useCurrentInstance();
+  const refreshSelectedMedias = useRefreshSelectedMedias();
 
   const handleZoomChange = (zoomFactor: number) => {
     if (!currentInstance) return;
@@ -29,6 +32,7 @@ export default function MediaItemUtilButtons() {
     });
 
     fetchWrapper(zoomXmlPayload).catch((error) => console.error(error));
+    refreshSelectedMedias();
   };
 
   const handleRotationChange = (rotationChange: number) => {
@@ -45,6 +49,7 @@ export default function MediaItemUtilButtons() {
     });
 
     fetchWrapper(rotationXmlPayload).catch((error) => console.error(error));
+    refreshSelectedMedias();
   };
 
   const handleIncreaseClick = () => handleZoomChange(1.1);
@@ -62,6 +67,7 @@ export default function MediaItemUtilButtons() {
     });
 
     fetchWrapper(deleteXmlPayload).catch((error) => console.error(error));
+    refreshSelectedMedias();
   };
 
   if (!currentInstance) {

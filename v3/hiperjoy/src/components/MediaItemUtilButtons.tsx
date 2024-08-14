@@ -3,6 +3,7 @@ import { ButtonGroup, IconButton } from "@mui/material";
 import { fetchWrapper } from "../utils/fetchers";
 import { buildXml } from "../utils/buildXml";
 import { useCurrentInstance } from "../utils/useCurrentInstance";
+import { useRefreshSelectedMedias } from "../utils/useRefreshSelectedMedias";
 
 import {
   Add,
@@ -14,6 +15,7 @@ import {
 
 export default function MediaItemUtilButtons() {
   const currentInstance = useCurrentInstance();
+  const refreshSelectedMedias = useRefreshSelectedMedias();
 
   const incXmlPayload = buildXml("Commands", {
     command: {
@@ -56,18 +58,23 @@ export default function MediaItemUtilButtons() {
 
   const handleIncreaseClick = () => {
     fetchWrapper(incXmlPayload).catch((error) => console.error(error));
+    refreshSelectedMedias();
   };
   const handleDecreaseClick = () => {
     fetchWrapper(decXmlPayload).catch((error) => console.error(error));
+    refreshSelectedMedias();
   };
   const handleDeleteClick = () => {
     fetchWrapper(deleteXmlPayload).catch((error) => console.error(error));
+    refreshSelectedMedias();
   };
   const handleRotateLeftClick = () => {
     fetchWrapper(rlXmlPayload).catch((error) => console.error(error));
+    refreshSelectedMedias();
   };
   const handleRotateRightClick = () => {
     fetchWrapper(rrXmlPayload).catch((error) => console.error(error));
+    refreshSelectedMedias();
   };
 
   if (!currentInstance) {

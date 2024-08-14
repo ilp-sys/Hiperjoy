@@ -3,6 +3,7 @@ import { fetchWrapper } from "../utils/fetchers";
 import { buildXml } from "../utils/buildXml";
 import { useCurrentInstance } from "../utils/useCurrentInstance";
 import { useRefreshSelectedMedias } from "../utils/useRefreshSelectedMedias";
+import { useState } from "react";
 
 import {
   Add,
@@ -11,49 +12,43 @@ import {
   RotateLeft,
   RotateRight,
 } from "@mui/icons-material";
-import { Instance } from "../interfaces/xmlResponses";
 
 export default function MediaItemUtilButtons() {
   const currentInstance = useCurrentInstance();
   const refreshSelectedMedias = useRefreshSelectedMedias();
+  const [zoomState, setZoomState] = useState(1);
 
   const handleZoomChange = (zoomFactor: number) => {
     if (!currentInstance) return;
-
-    const currentSize = parseFloat(currentInstance.size);
-    const newSize = currentSize * zoomFactor;
-
+    setZoomState(zoomState + zoomFactor);
     const zoomXmlPayload = buildXml("Commands", {
       command: {
         "@type": "change",
         id: currentInstance.id,
-        size: newSize.toString(),
+        zoom: zoomState,
       },
     });
-
     fetchWrapper(zoomXmlPayload).catch((error) => console.error(error));
     refreshSelectedMedias();
   };
 
   const handleRotationChange = (rotationChange: number) => {
     if (!currentInstance) return;
-
-    const newRotation = currentInstance.rotation + rotationChange;
-
+    const newRot = currentInstance.rotation + rotationChange;
     const rotationXmlPayload = buildXml("Commands", {
       command: {
         "@type": "change",
         id: currentInstance.id,
-        rotation: newRotation.toString(),
+        rot: newRot,
       },
     });
-
+    console.log(rotationXmlPayload);
     fetchWrapper(rotationXmlPayload).catch((error) => console.error(error));
     refreshSelectedMedias();
   };
 
-  const handleIncreaseClick = () => handleZoomChange(1.1);
-  const handleDecreaseClick = () => handleZoomChange(0.9);
+  const handleIncreaseClick = () => handleZoomChange(0.05);
+  const handleDecreaseClick = () => handleZoomChange(-0.05);
   const handleRotateLeftClick = () => handleRotationChange(-45);
   const handleRotateRightClick = () => handleRotationChange(45);
   const handleDeleteClick = () => {

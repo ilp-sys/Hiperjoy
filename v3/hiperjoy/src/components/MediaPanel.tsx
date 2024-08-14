@@ -10,6 +10,7 @@ import {
 
 import { thumbnailsState } from "../recoil-states";
 import { useCurrentInstance } from "../utils/useCurrentInstance";
+import { useRefreshSelectedMedias } from "../utils/useRefreshSelectedMedias";
 import { currentContentObjectState } from "../recoil-states";
 import { buildXml } from "../utils/buildXml";
 import { fetchWrapper } from "../utils/fetchers";
@@ -18,6 +19,7 @@ const MediaPanel: React.FC = () => {
   const currentInstance = useCurrentInstance();
   const thumbnails = useRecoilValue(thumbnailsState);
   const currentContentObject = useRecoilValue(currentContentObjectState);
+  const refreshSelectedMedias = useRefreshSelectedMedias();
   const [imgSrc, setImgSrc] = useState<string>("");
 
   useEffect(() => {
@@ -78,18 +80,22 @@ const MediaPanel: React.FC = () => {
 
   const handleArrowUpClick = () => {
     fetchWrapper(arrUpPayload).catch((error) => console.error(error));
+    refreshSelectedMedias();
   };
 
   const handleArrowDownClick = () => {
     fetchWrapper(arrDownPayload).catch((error) => console.error(error));
+    refreshSelectedMedias();
   };
 
   const handleArrowLeftClick = () => {
     fetchWrapper(arrLeftPayload).catch((error) => console.error(error));
+    refreshSelectedMedias();
   };
 
   const handleArrowRightClick = () => {
     fetchWrapper(arrRightPayload).catch((error) => console.error(error));
+    refreshSelectedMedias();
   };
 
   return (

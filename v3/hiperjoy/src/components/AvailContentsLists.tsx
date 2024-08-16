@@ -123,7 +123,7 @@ export default function AvailContentsLists() {
             {availContents.length} contents available
           </Typography>
           <List>
-            {availContents.map((content) => (
+            {availContents.map((content, index) => (
               <ContentListItem key={content.id} content={content} />
             ))}
           </List>

@@ -32,9 +32,13 @@ export default function MediaItemUtilButtons() {
     refreshSelectedMedias();
   };
 
+  const getNewRot = (prev: number, rotationChange: number): number => {
+    return prev + (rotationChange % 180);
+  };
+
   const handleRotationChange = (rotationChange: number) => {
     if (!currentInstance) return;
-    const newRot = currentInstance.rotation + rotationChange;
+    const newRot = getNewRot(currentInstance.rotation, rotationChange);
     const rotationXmlPayload = buildXml("Commands", {
       command: {
         "@type": "change",

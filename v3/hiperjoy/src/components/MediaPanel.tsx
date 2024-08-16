@@ -50,7 +50,7 @@ const MediaPanel: React.FC = () => {
     command: {
       "@type": "change",
       id: currentInstance.id,
-      rx: 25,
+      rx: 50,
     },
   });
 
@@ -58,7 +58,7 @@ const MediaPanel: React.FC = () => {
     command: {
       "@type": "change",
       id: currentInstance.id,
-      rx: -25,
+      rx: -50,
     },
   });
 
@@ -66,7 +66,7 @@ const MediaPanel: React.FC = () => {
     command: {
       "@type": "change",
       id: currentInstance.id,
-      ry: -25,
+      ry: -50,
     },
   });
 
@@ -74,7 +74,7 @@ const MediaPanel: React.FC = () => {
     command: {
       "@type": "change",
       id: currentInstance.id,
-      ry: 25,
+      ry: 50,
     },
   });
 

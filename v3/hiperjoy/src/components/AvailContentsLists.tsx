@@ -51,9 +51,14 @@ export default function AvailContentsLists() {
   useEffect(() => {
     fetchWrapper(listXmlPayload)
       .then((response) => parseStringPromise(response))
-      .then((parsedData) => setAvailContents(parsedData))
+      .then((parsedData) => {
+        setAvailContents(parsedData.Objects.Object);
+      })
       .catch((error) => console.error("failed to parse xml", error));
   }, []);
+
+  if (!availContents) return <></>;
+
   return (
     <>
       {availContents.length === 0 ? (

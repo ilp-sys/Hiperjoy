@@ -122,44 +122,52 @@ const MediaPanel: React.FC = () => {
 
         {/* Arrow Buttons */}
         <IconButton
+          size="large"
           style={{
             position: "absolute",
             top: 0,
             left: "50%",
             transform: "translateX(-50%)",
+            zIndex: 0,
           }}
           onClick={handleArrowRightClick}
         >
           <ArrowUpward />
         </IconButton>
         <IconButton
+          size="large"
           style={{
             position: "absolute",
             bottom: 0,
             left: "50%",
             transform: "translateX(-50%)",
+            zIndex: 0,
           }}
           onClick={handleArrowLeftClick}
         >
           <ArrowDownward />
         </IconButton>
         <IconButton
+          size="large"
           style={{
             position: "absolute",
             left: 0,
             top: "50%",
             transform: "translateY(-50%)",
+            zIndex: 0,
           }}
           onClick={handleArrowDownClick}
         >
           <ArrowBack />
         </IconButton>
         <IconButton
+          size="large"
           style={{
             position: "absolute",
             right: 0,
             top: "50%",
             transform: "translateY(-50%)",
+            zIndex: 0,
           }}
           onClick={handleArrowUpClick}
         >

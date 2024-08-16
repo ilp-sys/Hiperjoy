@@ -5,15 +5,11 @@ import { VolumeOff, VolumeUp, Refresh } from "@mui/icons-material";
 
 import { buildXml } from "../utils/buildXml";
 import { fetchWrapper } from "../utils/fetchers";
-import { selectedMediasState } from "../recoil-states";
 
-import { parseStringPromise } from "xml2js";
-import { useSetRecoilState } from "recoil";
 import { useRefreshSelectedMedias } from "../utils/useRefreshSelectedMedias";
 
 export default function FeedsUtilityButtons() {
   const [muteState, setMuteState] = useState(false);
-  const setSelectedMedias = useSetRecoilState(selectedMediasState);
   const refreshSelectedMedias = useRefreshSelectedMedias();
 
   const muteXmlPayload = buildXml("Commands", {
@@ -25,13 +21,6 @@ export default function FeedsUtilityButtons() {
   const unmuteXmlPayload = buildXml("Commands", {
     action: {
       "@type": "unmute-all",
-    },
-  });
-
-  const listXmlPayload = buildXml("Commands", {
-    action: {
-      "@type": "list",
-      filter: "open",
     },
   });
 

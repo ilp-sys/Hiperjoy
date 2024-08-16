@@ -1,9 +1,9 @@
 import { ButtonGroup, IconButton } from "@mui/material";
-
 import { fetchWrapper } from "../utils/fetchers";
 import { buildXml } from "../utils/buildXml";
 import { useCurrentInstance } from "../utils/useCurrentInstance";
 import { useRefreshSelectedMedias } from "../utils/useRefreshSelectedMedias";
+import { useState } from "react";
 
 import {
   Add,
@@ -16,64 +16,52 @@ import {
 export default function MediaItemUtilButtons() {
   const currentInstance = useCurrentInstance();
   const refreshSelectedMedias = useRefreshSelectedMedias();
+  const [zoomState, setZoomState] = useState(1);
 
-  const incXmlPayload = buildXml("Commands", {
-    command: {
-      "@type": "change",
-      id: currentInstance?.id,
-      zoom: "1.1",
-    },
-  });
-
-  const decXmlPayload = buildXml("Commands", {
-    command: {
-      "@type": "change",
-      id: currentInstance?.id,
-      zoom: "-1.1",
-    },
-  });
-
-  const deleteXmlPayload = buildXml("Commands", {
-    command: {
-      "@type": "close",
-      id: currentInstance?.id,
-    },
-  });
-
-  const rlXmlPayload = buildXml("Commands", {
-    command: {
-      "@type": "change",
-      id: currentInstance?.id,
-      rot: "-45",
-    },
-  });
-
-  const rrXmlPayload = buildXml("Commands", {
-    command: {
-      "@type": "change",
-      id: currentInstance?.id,
-      rot: "45",
-    },
-  });
-
-  const handleIncreaseClick = () => {
-    fetchWrapper(incXmlPayload).catch((error) => console.error(error));
+  const handleZoomChange = (zoomFactor: number) => {
+    if (!currentInstance) return;
+    setZoomState(zoomState + zoomFactor);
+    const zoomXmlPayload = buildXml("Commands", {
+      command: {
+        "@type": "change",
+        id: currentInstance.id,
+        zoom: zoomState,
+      },
+    });
+    fetchWrapper(zoomXmlPayload).catch((error) => console.error(error));
     refreshSelectedMedias();
   };
-  const handleDecreaseClick = () => {
-    fetchWrapper(decXmlPayload).catch((error) => console.error(error));
+
+  const handleRotationChange = (rotationChange: number) => {
+    if (!currentInstance) return;
+    const newRot = currentInstance.rotation + rotationChange;
+    const rotationXmlPayload = buildXml("Commands", {
+      command: {
+        "@type": "change",
+        id: currentInstance.id,
+        rot: newRot,
+      },
+    });
+    console.log(rotationXmlPayload);
+    fetchWrapper(rotationXmlPayload).catch((error) => console.error(error));
     refreshSelectedMedias();
   };
+
+  const handleIncreaseClick = () => handleZoomChange(0.05);
+  const handleDecreaseClick = () => handleZoomChange(-0.05);
+  const handleRotateLeftClick = () => handleRotationChange(-45);
+  const handleRotateRightClick = () => handleRotationChange(45);
   const handleDeleteClick = () => {
+    if (!currentInstance) return;
+
+    const deleteXmlPayload = buildXml("Commands", {
+      command: {
+        "@type": "close",
+        id: currentInstance.id,
+      },
+    });
+
     fetchWrapper(deleteXmlPayload).catch((error) => console.error(error));
-    refreshSelectedMedias();
-  };
-  const handleRotateLeftClick = () => {
-    fetchWrapper(rlXmlPayload).catch((error) => console.error(error));
-    refreshSelectedMedias();
-  };
-  const handleRotateRightClick = () => {
-    fetchWrapper(rrXmlPayload).catch((error) => console.error(error));
     refreshSelectedMedias();
   };
 

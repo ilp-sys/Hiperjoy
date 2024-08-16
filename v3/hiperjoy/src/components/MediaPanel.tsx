@@ -128,7 +128,7 @@ const MediaPanel: React.FC = () => {
             left: "50%",
             transform: "translateX(-50%)",
           }}
-          onClick={handleArrowUpClick}
+          onClick={handleArrowRightClick}
         >
           <ArrowUpward />
         </IconButton>
@@ -139,7 +139,7 @@ const MediaPanel: React.FC = () => {
             left: "50%",
             transform: "translateX(-50%)",
           }}
-          onClick={handleArrowDownClick}
+          onClick={handleArrowLeftClick}
         >
           <ArrowDownward />
         </IconButton>
@@ -150,7 +150,7 @@ const MediaPanel: React.FC = () => {
             top: "50%",
             transform: "translateY(-50%)",
           }}
-          onClick={handleArrowLeftClick}
+          onClick={handleArrowDownClick}
         >
           <ArrowBack />
         </IconButton>
@@ -161,7 +161,7 @@ const MediaPanel: React.FC = () => {
             top: "50%",
             transform: "translateY(-50%)",
           }}
-          onClick={handleArrowRightClick}
+          onClick={handleArrowUpClick}
         >
           <ArrowForward />
         </IconButton>
